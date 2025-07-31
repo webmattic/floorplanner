@@ -1,0 +1,689 @@
+
+> floorplanner-frontend@1.0.0 test /Users/shzz/docs-local/hd-django/hd/floorplanner/frontend
+> jest
+
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ts-jest[config] (WARN) [94mmessage[0m[90m TS151001: [0mIf you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+(node:46172) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/LayersPanel.integration.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/LayersPanel.tsx
+      src/components/panels/__tests__/LayersPanel.integration.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/LayersPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/LayersPanel.integration.test.tsx:7:1)
+
+(node:46171) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/View3DPanel.integration.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/View3DPanel.tsx
+      src/components/panels/__tests__/View3DPanel.integration.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/View3DPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/View3DPanel.integration.test.tsx:7:1)
+
+(node:46165) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/LayersPanel.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/LayersPanel.tsx
+      src/components/panels/__tests__/LayersPanel.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/LayersPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/LayersPanel.test.tsx:3:1)
+
+(node:46173) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/PropertiesPanel.integration.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/PropertiesPanel.tsx
+      src/components/panels/__tests__/PropertiesPanel.integration.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/PropertiesPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/PropertiesPanel.integration.test.tsx:7:1)
+
+(node:46164) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/View3DPanel.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/View3DPanel.tsx
+      src/components/panels/__tests__/View3DPanel.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/View3DPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/View3DPanel.test.tsx:3:1)
+
+(node:46167) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/PropertiesPanel.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/PropertiesPanel.tsx
+      src/components/panels/__tests__/PropertiesPanel.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/PropertiesPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/PropertiesPanel.test.tsx:3:1)
+
+(node:46168) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/MaterialPalettePanel.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/MaterialPalettePanel.tsx
+      src/components/panels/__tests__/MaterialPalettePanel.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/MaterialPalettePanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/MaterialPalettePanel.test.tsx:4:1)
+
+(node:46169) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/panels/__tests__/FurnitureLibraryPanel.test.tsx
+  ● Test suite failed to run
+
+    Cannot find module '@/lib/utils' from 'src/components/ui/floating-panel.tsx'
+
+    Require stack:
+      src/components/ui/floating-panel.tsx
+      src/components/panels/FurnitureLibraryPanel.tsx
+      src/components/panels/__tests__/FurnitureLibraryPanel.test.tsx
+
+      1 | import React, { useState, useEffect, useRef } from "react";
+      2 | import { Rnd } from "react-rnd";
+    > 3 | import { cn } from "@/lib/utils";
+        | ^
+      4 | import {
+      5 |   ChevronLeft,
+      6 |   ChevronRight,
+
+      at Resolver._throwModNotFoundError (node_modules/.pnpm/jest-resolve@29.7.0/node_modules/jest-resolve/build/resolver.js:427:11)
+      at Object.<anonymous> (src/components/ui/floating-panel.tsx:3:1)
+      at Object.<anonymous> (src/components/panels/FurnitureLibraryPanel.tsx:2:1)
+      at Object.<anonymous> (src/components/panels/__tests__/FurnitureLibraryPanel.test.tsx:4:1)
+
+(node:46166) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/__tests__/panel-integration.test.tsx
+  ● Panel Integration Tests › Panel visibility management
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      69 |
+      70 |     // Initially hidden
+    > 71 |     expect(result.current.isPanelVisible(panelId)).toBe(false);
+         |                                                    ^
+      72 |
+      73 |     // Show panel
+      74 |     act(() => {
+
+      at Function.value [as testPanelVisibility] (src/components/__tests__/panel-integration.test.tsx:71:52)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:221:27)
+
+  ● Panel Integration Tests › Keyboard shortcuts
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+      183 |         });
+      184 |
+    > 185 |         expect(result.current.isPanelVisible(panelId)).toBe(false);
+          |                                                        ^
+      186 |       }
+      187 |     });
+      188 |   };
+
+      at src/components/__tests__/panel-integration.test.tsx:185:56
+          at Array.forEach (<anonymous>)
+      at Function.value [as testKeyboardShortcuts] (src/components/__tests__/panel-integration.test.tsx:168:35)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:241:27)
+
+  ● Panel Integration Tests › Multiple panel interactions
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 4
+
+      256 |     });
+      257 |
+    > 258 |     expect(result.current.getVisiblePanels().length).toBe(3);
+          |                                                      ^
+      259 |
+      260 |     // Test z-index management
+      261 |     act(() => {
+
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:258:54)
+
+  ● Panel Integration Tests › Panel grouping functionality
+
+    Tests cannot be nested. Test "should manage panel groups" cannot run because it is nested within "Panel grouping functionality".
+
+      275 |   test("Panel grouping functionality", async () => {
+      276 |     const { result } = renderHook(() => usePanelStore());
+    > 277 |     it("should manage panel groups", () => {
+          |     ^
+      278 |       let groupId: string = "";
+      279 |
+      280 |       // Create a group
+
+      at eventHandler (node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/eventHandler.js:134:11)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:277:5)
+
+  ● Panel Integration Tests › Panel grouping functionality
+
+    Tests cannot be nested. Test "Workspace presets" cannot run because it is nested within "Panel grouping functionality".
+
+      311 |     });
+      312 |
+    > 313 |     test("Workspace presets", async () => {
+          |     ^
+      314 |       const { result } = renderHook(() => usePanelStore());
+      315 |       let presetId: string = "";
+      316 |
+
+      at eventHandler (node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/eventHandler.js:134:11)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:313:5)
+
+  ● Panel Integration Tests › Panel grouping functionality
+
+    Tests cannot be nested. Test "Error boundary functionality" cannot run because it is nested within "Panel grouping functionality".
+
+      350 |     });
+      351 |
+    > 352 |     test("Error boundary functionality", async () => {
+          |     ^
+      353 |       // This would test error boundaries in a real component
+      354 |       const ThrowError = () => {
+      355 |         throw new Error("Test error");
+
+      at eventHandler (node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/eventHandler.js:134:11)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:352:5)
+
+  ● Panel Integration Tests › Panel grouping functionality
+
+    Tests cannot be nested. Test "Performance monitoring" cannot run because it is nested within "Panel grouping functionality".
+
+      366 |     });
+      367 |
+    > 368 |     test("Performance monitoring", async () => {
+          |     ^
+      369 |       // Mock performance API
+      370 |       const mockPerformance = {
+      371 |         now: jest.fn(() => Date.now()),
+
+      at eventHandler (node_modules/.pnpm/jest-circus@29.7.0/node_modules/jest-circus/build/eventHandler.js:134:11)
+      at Object.<anonymous> (src/components/__tests__/panel-integration.test.tsx:368:5)
+
+(node:46170) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL src/components/__tests__/MeasurementTools.test.tsx
+  ● MeasurementTools › displays clearance detection control
+
+    TestingLibraryElementError: Unable to find an element with the text: Door Clearance Issue. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm w-full"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-calculator h-5 w-5"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"16"[39m
+                  [33mx[39m=[32m"4"[39m
+                  [33my[39m=[32m"2"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"8"[39m
+                  [33mx2[39m=[32m"16"[39m
+                  [33my1[39m=[32m"6"[39m
+                  [33my2[39m=[32m"6"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"16"[39m
+                  [33mx2[39m=[32m"16"[39m
+                  [33my1[39m=[32m"14"[39m
+                  [33my2[39m=[32m"18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 14h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 14h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 18h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 18h.01"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mMeasurement Tools[0m
+            [36m</h3>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2"[39m
+            [36m>[39m
+              [36m<h4[39m
+                [33mclass[39m=[32m"text-sm font-medium"[39m
+              [36m>[39m
+                [0mTools[0m
+              [36m</h4>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"grid grid-cols-1 gap-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md justify-start h-auto p-3"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-ruler h-4 w-4 mr-2"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m14.5 12.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m11.5 9.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m8.5 6.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m17.5 15.5 2-2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-left"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"font-medium"[39m
+                    [36m>[39m
+                      [0mLinear Measurement[0m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                    [36m>[39m
+                      [0mMeasure distance between two points[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</button>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md justify-start h-auto p-3"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-square h-4 w-4 mr-2"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<rect[39m
+                      [33mheight[39m=[32m"18"[39m
+                      [33mrx[39m=[32m"2"[39m
+                      [33mwidth[39m=[32m"18"[39m
+                      [33mx[39m=[32m"3"[39m
+                      [33my[39m=[32m"3"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+               ...
+
+      66 |     render(<MeasurementTools />);
+      67 |     expect(screen.getByText("Clearance Detection")).toBeInTheDocument();
+    > 68 |     expect(screen.getByText("Door Clearance Issue")).toBeInTheDocument();
+         |                   ^
+      69 |   });
+      70 |
+      71 |   test("displays measurement unit control", () => {
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.<anonymous> (src/components/__tests__/MeasurementTools.test.tsx:68:19)
+
+  ● MeasurementTools › displays total area
+
+    TestingLibraryElementError: Unable to find an element with the text: Total Area:. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+    Ignored nodes: comments, script, style
+    [36m<body>[39m
+      [36m<div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-lg border bg-card text-card-foreground shadow-sm w-full"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-col space-y-1.5 p-6"[39m
+          [36m>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"text-2xl font-semibold leading-none tracking-tight flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-calculator h-5 w-5"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"24"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"16"[39m
+                  [33mx[39m=[32m"4"[39m
+                  [33my[39m=[32m"2"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"8"[39m
+                  [33mx2[39m=[32m"16"[39m
+                  [33my1[39m=[32m"6"[39m
+                  [33my2[39m=[32m"6"[39m
+                [36m/>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"16"[39m
+                  [33mx2[39m=[32m"16"[39m
+                  [33my1[39m=[32m"14"[39m
+                  [33my2[39m=[32m"18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 10h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 14h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 14h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 18h.01"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 18h.01"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mMeasurement Tools[0m
+            [36m</h3>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"p-6 pt-0 space-y-4"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2"[39m
+            [36m>[39m
+              [36m<h4[39m
+                [33mclass[39m=[32m"text-sm font-medium"[39m
+              [36m>[39m
+                [0mTools[0m
+              [36m</h4>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"grid grid-cols-1 gap-2"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md justify-start h-auto p-3"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-ruler h-4 w-4 mr-2"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m14.5 12.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m11.5 9.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m8.5 6.5 2-2"[39m
+                    [36m/>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"m17.5 15.5 2-2"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"text-left"[39m
+                  [36m>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"font-medium"[39m
+                    [36m>[39m
+                      [0mLinear Measurement[0m
+                    [36m</div>[39m
+                    [36m<div[39m
+                      [33mclass[39m=[32m"text-xs text-muted-foreground"[39m
+                    [36m>[39m
+                      [0mMeasure distance between two points[0m
+                    [36m</div>[39m
+                  [36m</div>[39m
+                [36m</button>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"inline-flex items-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md justify-start h-auto p-3"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"lucide lucide-square h-4 w-4 mr-2"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mheight[39m=[32m"24"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                    [33mstroke-width[39m=[32m"2"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mwidth[39m=[32m"24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<rect[39m
+                      [33mheight[39m=[32m"18"[39m
+                      [33mrx[39m=[32m"2"[39m
+                      [33mwidth[39m=[32m"18"[39m
+                      [33mx[39m=[32m"3"[39m
+                      [33my[39m=[32m"3"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+               ...
+
+      76 |   test("displays total area", () => {
+      77 |     render(<MeasurementTools />);
+    > 78 |     expect(screen.getByText("Total Area:")).toBeInTheDocument();
+         |                   ^
+      79 |   });
+      80 |
+      81 |   test("displays tools section", () => {
+
+      at Object.getElementError (node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19)
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+      at node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+      at Object.<anonymous> (src/components/__tests__/MeasurementTools.test.tsx:78:19)
+
+Test Suites: 10 failed, 10 total
+Tests:       6 failed, 13 passed, 19 total
+Snapshots:   0 total
+Time:        8.77 s
+Ran all test suites.
+ ELIFECYCLE  Test failed. See above for more details.

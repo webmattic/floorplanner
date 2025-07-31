@@ -1,0 +1,128 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Global Styles */
+body {
+  @apply bg-gray-50 font-sans antialiased;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Main App Layout */
+.floorplanner-app {
+  @apply flex flex-col h-screen w-screen;
+}
+
+.header {
+  @apply bg-white shadow-md px-6 py-3 flex justify-between items-center z-20;
+  flex-shrink: 0;
+}
+
+.header-title h1 {
+  @apply text-xl font-bold text-gray-800;
+}
+
+.header-title p {
+  @apply text-sm text-gray-500;
+}
+
+.header-actions button {
+  @apply px-4 py-2 rounded-md font-semibold text-sm;
+}
+
+.btn-save {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.btn-share {
+  @apply bg-green-500 text-white hover:bg-green-600 ml-2;
+}
+
+.main-content {
+  @apply flex flex-1 overflow-hidden;
+}
+
+/* Sidebar (Tools & Properties) */
+.sidebar {
+  @apply bg-white shadow-lg p-4 flex-shrink-0 overflow-y-auto;
+  width: 250px;
+}
+
+.sidebar-left {
+  @apply border-r border-gray-200;
+}
+
+.sidebar-right {
+  @apply border-l border-gray-200;
+}
+
+.sidebar-section {
+  @apply mb-6;
+}
+
+.sidebar-title {
+  @apply text-base font-bold text-gray-800 mb-3;
+}
+
+.tool-button,
+.view-button {
+  @apply w-full flex items-center p-2 rounded-md text-sm text-gray-700 hover:bg-gray-100;
+}
+
+.tool-button.active,
+.view-button.active {
+  @apply bg-blue-100 text-blue-700 font-semibold;
+}
+
+.tool-button .icon,
+.view-button .icon {
+  @apply mr-3 text-lg;
+}
+
+/* Canvas Area */
+.canvas-area {
+  @apply flex-1 flex flex-col relative bg-gray-100;
+}
+
+.canvas-container {
+  @apply flex-1 relative;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.canvas-placeholder {
+  @apply absolute inset-0 flex flex-col justify-center items-center text-gray-400;
+}
+
+.canvas-placeholder h2 {
+  @apply text-2xl font-medium;
+}
+
+.canvas-placeholder p {
+  @apply text-sm;
+}
+
+.canvas-controls {
+  @apply absolute bottom-4 right-4 bg-white rounded-full shadow-lg flex items-center p-1;
+}
+
+.canvas-controls span {
+  @apply text-xs font-semibold text-gray-600 px-3;
+}
+
+.canvas-controls button {
+  @apply w-8 h-8 rounded-full text-gray-600 hover:bg-gray-100 text-lg;
+}
+
+/* Properties Panel */
+.properties-placeholder {
+  @apply text-center text-sm text-gray-500 mt-4;
+}

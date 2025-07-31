@@ -1,0 +1,428 @@
+/* Enhanced Mobile Responsive Styles for FloorPlanner */
+
+/* CSS Custom Properties for Mobile */
+:root {
+  --touch-target-size: 44px;
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+  --mobile-panel-height: 250px;
+  --mobile-toolbar-height: 60px;
+  --mobile-header-height: 56px;
+}
+
+/* Touch target optimization */
+.touch-target {
+  min-height: var(--touch-target-size);
+  min-width: var(--touch-target-size);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-friendly {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Safe area support */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* Scrollbar hiding for mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile-first responsive breakpoints */
+@media (max-width: 640px) {
+  /* Extra small mobile devices */
+  .floorplanner-app {
+    --mobile-panel-height: 200px;
+    --mobile-toolbar-height: 50px;
+    --mobile-header-height: 48px;
+  }
+
+  .touch-drawing-tools {
+    padding: 0.5rem;
+  }
+
+  .touch-drawing-tools-compact {
+    height: var(--mobile-toolbar-height);
+  }
+
+  /* Floating panels on mobile - stack behavior */
+  .floating-panel {
+    position: fixed !important;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 100px);
+    z-index: 1000;
+  }
+
+  .floating-panel.minimized {
+    width: 200px !important;
+    height: 40px !important;
+  }
+
+  /* Panel grid layout for mobile */
+  .mobile-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  /* Canvas optimizations */
+  .floorplanner-canvas {
+    touch-action: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Toolbar horizontal scroll */
+  .floorplanner-toolbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .floorplanner-toolbar > * {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile devices */
+  .floorplanner-app.mobile-layout {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  }
+
+  /* Enhanced touch targets */
+  .touch-target {
+    padding: 8px;
+    margin: 2px;
+  }
+
+  /* Panel responsive behavior */
+  .floating-panel {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Adaptive panel layouts */
+  .layout-drawer .floating-panel {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .layout-bottom .floating-panel {
+    position: relative;
+    width: 100%;
+    max-height: 200px;
+  }
+
+  .layout-overlay .floating-panel {
+    position: fixed;
+    z-index: 1001;
+  }
+
+  /* Gesture interaction areas */
+  .gesture-area {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .gesture-area.active {
+    pointer-events: all;
+  }
+
+  /* Drawing tools mobile optimizations */
+  .drawing-tools-mobile {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .drawing-tool-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    line-height: 1;
+  }
+
+  .drawing-tool-button .icon {
+    margin-bottom: 4px;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Furniture library mobile grid */
+  .furniture-grid-mobile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .furniture-item-mobile {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  /* Properties panel mobile */
+  .properties-panel-mobile .form-group {
+    margin-bottom: 12px;
+  }
+
+  .properties-panel-mobile input,
+  .properties-panel-mobile select,
+  .properties-panel-mobile textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 12px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Landscape mobile optimization */
+  .floorplanner-app.orientation-landscape {
+    --mobile-header-height: 44px;
+    --mobile-toolbar-height: 44px;
+  }
+
+  .floorplanner-toolbar {
+    padding: 4px 8px;
+  }
+
+  .touch-target {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  /* Compact floating panels in landscape */
+  .floating-panel {
+    max-height: calc(100vh - 100px);
+  }
+
+  /* Side panel for landscape */
+  .landscape-side-panel {
+    position: fixed;
+    right: 0;
+    top: var(--mobile-header-height);
+    bottom: 0;
+    width: 280px;
+    background: white;
+    border-left: 1px solid #e5e7eb;
+    overflow-y: auto;
+    z-index: 50;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .landscape-side-panel.open {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Tablet optimizations */
+  .floorplanner-app.tablet-layout {
+    --mobile-panel-height: 300px;
+  }
+
+  /* Panel grid for tablets */
+  .tablet-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .floating-panel {
+    position: relative;
+    width: 100%;
+    max-height: 400px;
+  }
+
+  /* Enhanced touch targets for tablets */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Toolbar spacing for tablets */
+  .floorplanner-toolbar {
+    padding: 8px 16px;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .floating-panel {
+    border-width: 0.5px;
+  }
+
+  .touch-target {
+    border-width: 0.5px;
+  }
+
+  /* Sharper icons on high DPI */
+  .icon {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Touch interaction feedback */
+.touch-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.touch-feedback::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s;
+  pointer-events: none;
+}
+
+.touch-feedback:active::after {
+  width: 100px;
+  height: 100px;
+}
+
+/* Gesture hint animations */
+@keyframes pinch-hint {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes swipe-hint {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.gesture-hint-pinch {
+  animation: pinch-hint 2s infinite;
+}
+
+.gesture-hint-swipe {
+  animation: swipe-hint 2s infinite;
+}
+
+/* Accessibility improvements for mobile */
+@media (prefers-reduced-motion: reduce) {
+  .floating-panel,
+  .touch-target,
+  .gesture-hint-pinch,
+  .gesture-hint-swipe {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Focus improvements for keyboard navigation on mobile */
+.touch-target:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Performance optimizations */
+.floorplanner-canvas {
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.floating-panel {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Dark mode support for mobile */
+@media (prefers-color-scheme: dark) {
+  .floating-panel {
+    background: #1f2937;
+    border-color: #374151;
+    color: white;
+  }
+
+  .touch-target {
+    background: #374151;
+    color: white;
+  }
+
+  .floorplanner-toolbar {
+    background: #111827;
+    border-color: #374151;
+  }
+}
+
+/* Print styles - hide mobile UI elements */
+@media print {
+  .floorplanner-toolbar,
+  .floating-panel,
+  .touch-target,
+  .mobile-header {
+    display: none !important;
+  }
+
+  .floorplanner-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    position: static !important;
+  }
+}
