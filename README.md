@@ -63,6 +63,16 @@ npm run preview:standalone    # Preview standalone build
 npm run clean                # Clean build directories
 ```
 
+## Build & Debug Workflows
+
+- **Standalone Build:** `npm run build:standalone` (outputs to `dist/`)
+- **Django Build:** `npm run build:django` (outputs to `../static/floorplanner/js`)
+- **Preview:** `npm run preview:standalone` (serves production build)
+- **Bundle Analysis:** After build, open `dist/bundle-analysis.html` for bundle stats
+- **PWA:** Manifest and service worker are auto-injected; see `public/manifest.json` and `public/sw.js`
+- **Production Optimizations:** Minification, code splitting, and tree-shaking are enabled by default
+- **Hot Module Replacement:** Enabled in development mode
+
 ## Configuration
 
 The application uses environment variables for configuration. Copy `.env.example` to `.env` and customize:
@@ -94,6 +104,27 @@ VITE_AUTO_SAVE_INTERVAL=30000
 VITE_DEBUG_MODE=true
 VITE_MOCK_API=true
 ```
+
+# Environment Variables
+
+The following environment variables are used for configuration. Set these in your `.env` file:
+
+| Variable                  | Description                            | Example Value             |
+| ------------------------- | -------------------------------------- | ------------------------- |
+| VITE_APP_TITLE            | Application title                      | FloorPlanner              |
+| VITE_APP_VERSION          | Application version                    | 1.0.0                     |
+| VITE_API_BASE_URL         | API base URL                           | http://localhost:3001/api |
+| VITE_WS_URL               | WebSocket URL                          | ws://localhost:3001/ws    |
+| VITE_ENABLE_AUTH          | Enable authentication (true/false)     | false                     |
+| VITE_AUTH_PROVIDER        | Auth provider (local, firebase, auth0) | local                     |
+| VITE_ENABLE_COLLABORATION | Enable real-time collaboration         | true                      |
+| VITE_ENABLE_3D_VIEW       | Enable 3D view                         | true                      |
+| VITE_ENABLE_EXPORT        | Enable export features                 | true                      |
+| VITE_ENABLE_CAD_IMPORT    | Enable CAD import                      | true                      |
+| VITE_STORAGE_TYPE         | Storage type (localStorage, indexedDB) | localStorage              |
+| VITE_AUTO_SAVE_INTERVAL   | Auto-save interval (ms)                | 30000                     |
+| VITE_DEBUG_MODE           | Enable debug mode                      | true                      |
+| VITE_MOCK_API             | Use mock API (true/false)              | true                      |
 
 ## Architecture
 
@@ -225,3 +256,32 @@ For support and questions:
 - 📧 Email: support@floorplanner.com
 - 📖 Documentation: [docs.floorplanner.com](https://docs.floorplanner.com)
 - 🐛 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+
+# Testing Workflow (2025)
+
+## Unit & Integration Tests (Vitest)
+
+- Run all tests: `npm run test`
+- Watch mode UI: `npm run test:watch`
+- Coverage: `vitest run --coverage`
+- Test files: `src/components/__tests__/**/*.test.{ts,tsx,js,jsx}`
+
+## End-to-End (E2E) Tests (Playwright)
+
+- Start dev server: `npm run dev:standalone`
+- Run E2E tests: `npx playwright test`
+- E2E test files: `src/e2e/*.spec.ts`
+- Playwright config: `playwright.config.ts`
+
+## Migration Notes
+
+- Jest and related dependencies have been removed.
+- All unit/integration tests should use Vitest syntax (`describe`, `it`, `expect` from `vitest`).
+- E2E tests use Playwright and require the app to be running locally.
+- See `vitest.config.ts` and `playwright.config.ts` for configuration details.
+
+## Troubleshooting
+
+- If tests are not discovered, check file extensions and config include patterns.
+- For E2E, ensure the dev server is running before executing Playwright tests.
+- For new tests, prefer Vitest for logic/components, Playwright for user flows.

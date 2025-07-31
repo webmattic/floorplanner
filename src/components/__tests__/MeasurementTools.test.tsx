@@ -1,10 +1,10 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
 import MeasurementTools from "../MeasurementTools";
 
 // Mock the store
-jest.mock("../../stores/floorPlanStore", () => ({
+vi.mock("../../stores/floorPlanStore", () => ({
   __esModule: true,
   default: () => ({
     measurements: [
@@ -25,9 +25,9 @@ jest.mock("../../stores/floorPlanStore", () => ({
     ],
     clearanceDetection: true,
     measurementUnit: "ft",
-    toggleClearanceDetection: jest.fn(),
-    setMeasurementUnit: jest.fn(),
-    removeMeasurement: jest.fn(),
+    toggleClearanceDetection: vi.fn(),
+    setMeasurementUnit: vi.fn(),
+    removeMeasurement: vi.fn(),
     getClearanceIssues: () => [
       {
         id: "issue-1",
@@ -41,44 +41,44 @@ jest.mock("../../stores/floorPlanStore", () => ({
 }));
 
 describe("MeasurementTools", () => {
-  test("renders measurement tools component", () => {
+  it("renders measurement tools component", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Measurement Tools")).toBeInTheDocument();
   });
 
-  test("displays the correct number of measurements", () => {
+  it("displays the correct number of measurements", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Measurements (2)")).toBeInTheDocument();
   });
 
-  test("displays the correct measurement types", () => {
+  it("displays the correct measurement types", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("linear")).toBeInTheDocument();
     expect(screen.getByText("area")).toBeInTheDocument();
   });
 
-  test("displays virtual tape measure control", () => {
+  it("displays virtual tape measure control", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Virtual Tape Measure")).toBeInTheDocument();
   });
 
-  test("displays clearance detection control", () => {
+  it("displays clearance detection control", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Clearance Detection")).toBeInTheDocument();
     expect(screen.getByText("Door Clearance Issue")).toBeInTheDocument();
   });
 
-  test("displays measurement unit control", () => {
+  it("displays measurement unit control", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Measurement Unit")).toBeInTheDocument();
   });
 
-  test("displays total area", () => {
+  it("displays total area", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Total Area:")).toBeInTheDocument();
   });
 
-  test("displays tools section", () => {
+  it("displays tools section", () => {
     render(<MeasurementTools />);
     expect(screen.getByText("Tools")).toBeInTheDocument();
     expect(screen.getByText("Linear Measurement")).toBeInTheDocument();
@@ -86,19 +86,21 @@ describe("MeasurementTools", () => {
     expect(screen.getByText("Angle Measurement")).toBeInTheDocument();
   });
 
-  test("activates a tool when clicked", () => {
+  it("activates a tool when clicked", () => {
     render(<MeasurementTools />);
     const linearToolButton = screen
       .getByText("Linear Measurement")
       .closest("button");
-    fireEvent.click(linearToolButton);
-    expect(
-      screen.getByText("Click two points to measure distance")
-    ).toBeInTheDocument();
+    if (linearToolButton) {
+      fireEvent.click(linearToolButton);
+      expect(
+        screen.getByText("Click two points to measure distance")
+      ).toBeInTheDocument();
+    }
   });
 
-  test("clear all button removes all measurements", () => {
-    const onRemoveMeasurementMock = jest.fn();
+  it("clear all button removes all measurements", () => {
+    const onRemoveMeasurementMock = vi.fn();
     render(<MeasurementTools onRemoveMeasurement={onRemoveMeasurementMock} />);
     const clearAllButton = screen.getByText("Clear All");
     fireEvent.click(clearAllButton);
