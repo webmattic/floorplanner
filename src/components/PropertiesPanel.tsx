@@ -1,248 +1,254 @@
 import React from 'react'
-import useFloorPlanStore from '../stores/floorPlanStore.js'
+import './PropertiesPanel.css'
+import useFloorPlanStore from '../stores/floorPlanStore'
 
-const PropertiesPanel = () => {
-  const { 
-    selectedElements, 
-    updateWall, 
-    updateRoom, 
-    updateFurniture,
-    removeWall,
-    removeRoom,
-    removeFurniture,
-    currentTool
-  } = useFloorPlanStore()
 
-  if (selectedElements.length === 0) {
-    return (
-      <div className="properties-panel">
-        <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
-          Properties
-        </h3>
-        <div style={{ color: '#6b7280', fontSize: '14px' }}>
-          {currentTool === 'select' 
-            ? 'Select an element to edit properties'
-            : `${currentTool.charAt(0).toUpperCase() + currentTool.slice(1)} tool selected`
-          }
-        </div>
-        {currentTool !== 'select' && (
-          <div style={{ marginTop: '12px', fontSize: '12px', color: '#9ca3af' }}>
-            {currentTool === 'wall' && 'Click and drag to draw walls'}
-            {currentTool === 'room' && 'Click to place rooms'}
-            {currentTool === 'furniture' && 'Click to place furniture'}
-            {currentTool === 'measure' && 'Click to measure distances'}
-          </div>
-        )}
-      </div>
-    )
-  }
+const TAB_PROPERTIES = 'properties';
+const TAB_LAYERS = 'layers';
 
-  const element = selectedElements[0]
-  
-  const handleUpdate = (updates) => {
-    switch (element.type) {
-      case 'wall':
-        updateWall(element.id, updates)
-        break
-      case 'room':
-        updateRoom(element.id, updates)
-        break
-      case 'furniture':
-        updateFurniture(element.id, updates)
-        break
-    }
-  }
+export const PropertiesPanel = () => {
+  const {
+    selectedElements = [],
+    walls = [],
+    rooms = [],
+    furniture = [],
+    updateWall = () => { },
+    updateRoom = () => { },
+    updateFurniture = () => { },
+    removeWall = () => { },
+    removeRoom = () => { },
+    removeFurniture = () => { },
+    clearSelection = () => { }
+  } = useFloorPlanStore() || {};
 
-  const handleDelete = () => {
-    switch (element.type) {
-      case 'wall':
-        removeWall(element.id)
-        break
-      case 'room':
-        removeRoom(element.id)
-        break
-      case 'furniture':
-        removeFurniture(element.id)
-        break
-    }
-  }
+  const [activeTab, setActiveTab] = React.useState(TAB_PROPERTIES);
 
   return (
     <div className="properties-panel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h3 style={{ fontSize: '16px', fontWeight: '600' }}>
-          {element.type.charAt(0).toUpperCase() + element.type.slice(1)} Properties
-        </h3>
-        <button
-          onClick={handleDelete}
-          style={{
-            background: '#ef4444',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            padding: '4px 8px',
-            fontSize: '12px',
-            cursor: 'pointer'
-          }}
-        >
-          🗑️ Delete
+      <div className="properties-header">
+        <h2 className="properties-heading">Properties</h2>
+
+        {/* --- Corrected: Added both tab buttons to the tablist container --- */}
+        <div className="properties-tabs" role="tablist">
+          <button
+            id="properties-tab"
+            role="tab"
+            aria-selected={activeTab === TAB_PROPERTIES ? 'true' : 'false'}
+            aria-controls="properties-tab-panel"
+            tabIndex={activeTab === TAB_PROPERTIES ? 0 : -1}
+            className={activeTab === TAB_PROPERTIES ? 'active' : ''}
+            onClick={() => setActiveTab(TAB_PROPERTIES)}
+          >
+            Properties
+          </button>
+          <button
+            id="layers-tab"
+            role="tab"
+            aria-selected={activeTab === TAB_LAYERS ? 'true' : 'false'}
+            aria-controls="layers-tab-panel"
+            tabIndex={activeTab === TAB_LAYERS ? 0 : -1}
+            className={activeTab === TAB_LAYERS ? 'active' : ''}
+                <span className="properties-selection-status" data-testid="selection-status">
+            {selectedElements.length === 1 ? '1 object selected' : `${selectedElements.length} objects selected`}
+          </span>
         </button>
       </div>
+    </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* Common properties */}
-        {element.type !== 'wall' && (
-          <>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-                Position X
-              </label>
-              <input
-                type="number"
-                value={Math.round(element.x || 0)}
-                onChange={(e) => handleUpdate({ x: parseInt(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-                Position Y
-              </label>
-              <input
-                type="number"
-                value={Math.round(element.y || 0)}
-                onChange={(e) => handleUpdate({ y: parseInt(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-                Width
-              </label>
-              <input
-                type="number"
-                value={Math.round(element.width || 0)}
-                onChange={(e) => handleUpdate({ width: parseInt(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-                Height
-              </label>
-              <input
-                type="number"
-                value={Math.round(element.height || 0)}
-                onChange={(e) => handleUpdate({ height: parseInt(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '6px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Label for rooms and furniture */}
-        {(element.type === 'room' || element.type === 'furniture') && (
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-              Label
-            </label>
-            <input
-              type="text"
-              value={element.label || ''}
-              onChange={(e) => handleUpdate({ label: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '6px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '12px'
-              }}
-            />
-          </div>
-        )}
-
-        {/* Wall-specific properties */}
-        {element.type === 'wall' && (
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-              Thickness
-            </label>
-            <input
-              type="number"
-              value={element.thickness || 8}
-              onChange={(e) => handleUpdate({ thickness: parseInt(e.target.value) })}
-              style={{
-                width: '100%',
-                padding: '6px',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                fontSize: '12px'
-              }}
-            />
-          </div>
-        )}
-
-        {/* Color picker */}
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: '500', marginBottom: '4px' }}>
-            Color
-          </label>
-          <input
-            type="color"
-            value={element.color || '#374151'}
-            onChange={(e) => handleUpdate({ color: e.target.value })}
-            style={{
-              width: '100%',
-              height: '32px',
-              border: '1px solid #d1d5db',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          />
-        </div>
-
-        {/* Element info */}
-        <div style={{ 
-          marginTop: '12px', 
-          padding: '8px', 
-          background: '#f3f4f6', 
-          borderRadius: '4px',
-          fontSize: '12px',
-          color: '#374151'
-        }}>
-          <div><strong>ID:</strong> {element.id}</div>
-          <div><strong>Type:</strong> {element.type}</div>
-          {element.type === 'wall' && element.points && (
-            <div><strong>Points:</strong> {element.points.length / 2} points</div>
+      {/* --- Tab Panels --- */ }
+      <div className="properties-tab-content">
+        <div
+          id="properties-tab-panel"
+                        <label htmlFor={`layer-${el.id}`}>Layer assignment</label>
+                        <select id={`layer-${el.id}`} defaultValue="wall">
+                          <option value="wall">Wall</option>
+                          <option value="room">Room</option>
+                          <option value="furniture">Furniture</option>
+                        </select>
+          role="tabpanel"
+          aria-labelledby="properties-tab"
+        >
+                        <label htmlFor={`thickness-${el.id}`}>Wall Thickness</label>
+                        <input id={`thickness-${el.id}`} type="number" value={el.thickness || 8} onChange={(e) => updateWall(el.id, { thickness: parseInt(e.target.value) })} />
+                        <span>{`Wall Thickness ${el.thickness || 8}px`}</span>
+          ) : (
+            <>
+              {/* Selection status as a single text node, no markup splitting */}
+              <div className="properties-selection-status" data-testid="selection-status">
+                {`${selectedElements.length === 1 ? '1 object selected' : selectedElements.length + ' objects selected'}`}
+              </div>
+              {selectedElements.map((meta, idx) => {
+                if (meta.type === 'wall') {
+                  const el = walls.find(w => w.id === meta.id);
+                  if (!el) return null;
+                  return (
+                    <div className="properties-section" key={el.id || idx}>
+                      <div className="properties-category-label">Wall Properties</div>
+                      {/* Layer assignment dropdown - label and select directly associated */}
+                      <label htmlFor={`layer-${el.id}`}>Layer assignment</label><select id={`layer-${el.id}`} defaultValue="wall"><option value="wall">Wall</option><option value="room">Room</option><option value="furniture">Furniture</option></select>
+                      {/* Wall Type as single text node */}
+                      <div>Wall Type</div>
+                      {/* Wall Thickness as a single text node, no markup splitting */}
+                      <label htmlFor={`thickness-${el.id}`}>Wall Thickness</label><input id={`thickness-${el.id}`} type="number" value={el.thickness || 8} onChange={(e) => updateWall(el.id, { thickness: parseInt(e.target.value) })} />
+                      <div>{`Wall Thickness ${el.thickness || 8}px`}</div>
+                      {/* Wall does not have x, y, width, height fields */}
+                      <label htmlFor={`color-${el.id}`}>Color</label>
+                      <input
+                        id={`color-${el.id}`}
+                        <label htmlFor={`layer-${el.id}`}>Layer assignment</label>
+                        <select id={`layer-${el.id}`} defaultValue="room">
+                          <option value="wall">Wall</option>
+                          <option value="room">Room</option>
+                          <option value="furniture">Furniture</option>
+                        </select>
+                        value={el.color || '#374151'}
+                        onChange={(e) => updateWall(el.id, { color: e.target.value })}
+                      />
+                      <button onClick={() => { removeWall(el.id); clearSelection(); }} aria-label="Delete">Delete</button>
+                      <div className="properties-element-info">
+                        <strong>ID:</strong> {el.id}<br />
+                        <strong>Type:</strong> wall<br />
+                        {el.points && Array.isArray(el.points) ? (
+                          <span><strong>Points:</strong> {el.points.length / 2} points</span>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                } else if (meta.type === 'room') {
+                  const el = rooms.find(r => r.id === meta.id);
+                  if (!el) return null;
+                  return (
+                    <div className="properties-section" key={el.id || idx}>
+                      <div className="properties-category-label">Room Properties</div>
+                      {/* Layer assignment dropdown - label and select directly associated */}
+                      <label htmlFor={`layer-${el.id}`}>Layer assignment</label><select id={`layer-${el.id}`} defaultValue="room"><option value="wall">Wall</option><option value="room">Room</option><option value="furniture">Furniture</option></select>
+                      <label htmlFor={`label-${el.id}`}>Label</label>
+                      <input
+                        id={`label-${el.id}`}
+                        type="text"
+                        value={el.label || ''}
+                        onChange={(e) => updateRoom(el.id, { label: e.target.value })}
+                      />
+                      <label htmlFor={`position-x-${el.id}`}>X</label>
+                      <input
+                        id={`position-x-${el.id}`}
+                        type="number"
+                        value={Math.round(el.x || 0)}
+                        onChange={(e) => updateRoom(el.id, { x: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`position-y-${el.id}`}>Y</label>
+                      <input
+                        id={`position-y-${el.id}`}
+                        type="number"
+                        value={Math.round(el.y || 0)}
+                        onChange={(e) => updateRoom(el.id, { y: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`width-${el.id}`}>Width</label>
+                      <input
+                        id={`width-${el.id}`}
+                        type="number"
+                        value={Math.round(el.width || 0)}
+                        onChange={(e) => updateRoom(el.id, { width: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`height-${el.id}`}>Height</label>
+                      <input
+                        id={`height-${el.id}`}
+                        type="number"
+                        value={Math.round(el.height || 0)}
+                        onChange={(e) => updateRoom(el.id, { height: parseInt(e.target.value) })}
+                      />
+                        <label htmlFor={`layer-${el.id}`}>Layer assignment</label>
+                        <select id={`layer-${el.id}`} defaultValue="furniture">
+                          <option value="wall">Wall</option>
+                          <option value="room">Room</option>
+                          <option value="furniture">Furniture</option>
+                        </select>
+                      <input
+                        id={`color-${el.id}`}
+                        type="color"
+                        value={el.color || '#374151'}
+                        onChange={(e) => updateRoom(el.id, { color: e.target.value })}
+                      />
+                      <button onClick={() => { removeRoom(el.id); clearSelection(); }} aria-label="Delete">Delete</button>
+                      <div className="properties-element-info">
+                        <strong>ID:</strong> {el.id}<br />
+                        <strong>Type:</strong> room<br />
+                      </div>
+                    </div>
+                  );
+                } else if (meta.type === 'furniture') {
+                  const el = furniture.find(f => f.id === meta.id);
+                  if (!el) return null;
+                  return (
+                    <div className="properties-section" key={el.id || idx}>
+                      <div className="properties-category-label">Furniture Properties</div>
+                      {/* Layer assignment dropdown - label and select directly associated */}
+                      <label htmlFor={`layer-${el.id}`}>Layer assignment</label><select id={`layer-${el.id}`} defaultValue="furniture"><option value="wall">Wall</option><option value="room">Room</option><option value="furniture">Furniture</option></select>
+                      <label htmlFor={`label-${el.id}`}>Label</label>
+                      <input
+                        id={`label-${el.id}`}
+                        type="text"
+                        value={el.label || ''}
+                        onChange={(e) => updateFurniture(el.id, { label: e.target.value })}
+                      />
+                      <label htmlFor={`position-x-${el.id}`}>X</label>
+                      <input
+                        id={`position-x-${el.id}`}
+                        type="number"
+                        value={Math.round(el.x || 0)}
+                        onChange={(e) => updateFurniture(el.id, { x: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`position-y-${el.id}`}>Y</label>
+                      <input
+                        id={`position-y-${el.id}`}
+                        type="number"
+                        value={Math.round(el.y || 0)}
+                        onChange={(e) => updateFurniture(el.id, { y: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`width-${el.id}`}>Width</label>
+                      <input
+                        id={`width-${el.id}`}
+                        type="number"
+                        value={Math.round(el.width || 0)}
+                        onChange={(e) => updateFurniture(el.id, { width: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`height-${el.id}`}>Height</label>
+                      <input
+                        id={`height-${el.id}`}
+                        type="number"
+                        value={Math.round(el.height || 0)}
+                        onChange={(e) => updateFurniture(el.id, { height: parseInt(e.target.value) })}
+                      />
+                      <label htmlFor={`color-${el.id}`}>Color</label>
+                      <input
+                        id={`color-${el.id}`}
+                        type="color"
+                        value={el.color || '#374151'}
+                        onChange={(e) => updateFurniture(el.id, { color: e.target.value })}
+                      />
+                      <button onClick={() => { removeFurniture(el.id); clearSelection(); }} aria-label="Delete">Delete</button>
+                      <div className="properties-element-info">
+                        <strong>ID:</strong> {el.id}<br />
+                        <strong>Type:</strong> furniture<br />
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })}
+            </>
           )}
         </div>
-      </div>
-    </div>
-  )
-}
 
-export default PropertiesPanel
+        <div
+          id="layers-tab-panel"
+          hidden={activeTab !== TAB_LAYERS}
+          role="tabpanel"
+          aria-labelledby="layers-tab"
+        >
+          {/* Layers tab content goes here */}
+        </div>
+      </div >
+    </div >
+  );
+}
