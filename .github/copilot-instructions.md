@@ -14,6 +14,7 @@ Decompose the overall task into smaller, manageable sub-tasks.
 
 ### Detailed TODO Plan
 
+- Make use of Class invariants, Loop invariants, pre and post condition invariants, system and module invariants, and other relevant invariants to ensure correctness and non-violation.
 - For each sub-task, outline a granular, step-by-step TODO list.
 - Each step must be explicit and actionable.
 - Include anticipated libraries, functions, and data structures where relevant.

@@ -20,7 +20,7 @@ import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
-  Settings,
+  // ...existing code...
   Palette,
   Layers,
   Eye,
@@ -37,6 +37,7 @@ import {
   Type,
   Info,
 } from "lucide-react";
+import { Settings } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 
 // Layer definitions - in a real app, this would come from a layer store
@@ -115,275 +116,210 @@ const TEXTURE_PATTERNS = [
   { id: "concrete", name: "Concrete", icon: "⬜" },
 ];
 
-export const PropertiesPanel: React.FC = () => {
-  // Renders properties for selected elements (room, wall, furniture)
+export const PropertiesPanel: React.FC<{ panelId?: string }> = ({ panelId = "properties" }) => {
+
+  // Zustand selectors
+  const selectedElementsRaw = useFloorPlanStore((s) => s.selectedElements);
+  const selectedElements = Array.isArray(selectedElementsRaw) ? selectedElementsRaw : [];
+  const rooms = useFloorPlanStore((s) => s.rooms);
+  const walls = useFloorPlanStore((s) => s.walls);
+  const furniture = useFloorPlanStore((s) => s.furniture);
+  const rawLayers = useFloorPlanStore((s) => s.layers);
+  const layers = Array.isArray(rawLayers) ? rawLayers : DEFAULT_LAYERS;
+  const updateRoom = useFloorPlanStore((s) => s.updateRoom);
+  const updateWall = useFloorPlanStore((s) => s.updateWall);
+  const updateFurniture = useFloorPlanStore((s) => s.updateFurniture);
+  const removeRoom = useFloorPlanStore((s) => s.removeRoom);
+  const removeWall = useFloorPlanStore((s) => s.removeWall);
+  const removeFurniture = useFloorPlanStore((s) => s.removeFurniture);
+  const clearSelection = useFloorPlanStore((s) => s.clearSelection);
+
+  const [activeTab, setActiveTab] = useState("properties");
+
+  function handleDelete(selected) {
+    if (selected.type === "room") {
+      removeRoom(selected.id);
+    } else if (selected.type === "wall") {
+      removeWall(selected.id);
+    } else if (selected.type === "furniture") {
+      removeFurniture(selected.id);
+    }
+    clearSelection();
+  }
+
   function renderElementProperties() {
-    if (!selectedElements || selectedElements.length === 0) {
+    // Always render fallback heading and message for testability
+    if (!selectedElements || selectedElements.length === 0 || !selectedElements[0]) {
       return (
         <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-          <h4 className="text-sm font-medium mb-2" data-testid="properties-header">Properties</h4>
+          <h2 className="text-sm font-medium mb-2" role="heading" aria-level="2" data-testid="properties-header">Properties</h2>
           <div data-testid="no-selection-message">No elements selected</div>
         </div>
       );
     }
+
     const selected = selectedElements[0];
-    let objectProps = null;
+    let elementData;
     if (selected.type === "room") {
-      const room = rooms.find((r) => r.id === selected.id);
-      if (!room) return null;
-      objectProps = (
-        <div>
-          <h4 className="text-sm font-medium mb-2">Room Properties</h4>
-          <Label htmlFor="room-label">Label</Label>
-          <Input id="room-label" value={room.label || ""} aria-label="Label" readOnly />
-          <Label htmlFor="room-x">X</Label>
-          <Input id="room-x" value={room.x} aria-label="X" readOnly />
-          <Label htmlFor="room-y">Y</Label>
-          <Input id="room-y" value={room.y} aria-label="Y" readOnly />
-          <Label htmlFor="room-width">Width</Label>
-          <Input id="room-width" value={room.width} aria-label="Width" readOnly />
-          <Label htmlFor="room-height">Height</Label>
-          <Input id="room-height" value={room.height} aria-label="Height" readOnly />
-          <Label htmlFor="room-color">Color</Label>
-          <Input id="room-color" value={room.color} aria-label="Color" readOnly />
-        </div>
-      );
+      elementData = rooms.find((r) => r.id === selected.id);
+    } else if (selected.type === "wall") {
+      elementData = walls.find((w) => w.id === selected.id);
+    } else if (selected.type === "furniture") {
+      elementData = furniture.find((f) => f.id === selected.id);
     }
-    if (selected.type === "wall") {
-      const wall = walls.find((w) => w.id === selected.id);
-      if (!wall) return null;
-      objectProps = (
-        <div>
-          <h4 className="text-sm font-medium mb-2">Wall Properties</h4>
-          <Label htmlFor="wall-type">Wall Type</Label>
-          <Input id="wall-type" value={wall.type || "Standard"} aria-label="Wall Type" readOnly />
-          <Label htmlFor="wall-color">Color</Label>
-          <Input id="wall-color" value={wall.color} aria-label="Color" readOnly />
-          <Label htmlFor="wall-thickness">Wall Thickness</Label>
-          <div className="flex items-center gap-2">
-            <Slider id="wall-thickness" value={[wall.thickness || 8]} min={1} max={24} step={1} aria-label="Wall Thickness" readOnly />
-            <span>{(wall.thickness || 8) + "px"}</span>
+    if (!elementData) return null;
+
+    // Room properties
+    if (selected.type === "room") {
+      return (
+        <form className="space-y-4" aria-label="Room Properties">
+          <div className="grid grid-cols-2 gap-2">
+            <Label htmlFor="label">Label</Label>
+            <Input id="label" aria-label="Label" value={elementData.label} onChange={e => updateRoom(selected.id, { label: e.target.value })} />
+            <Label htmlFor="x">X</Label>
+            <Input id="x" aria-label="X" type="number" value={elementData.x} onChange={e => updateRoom(selected.id, { x: Number(e.target.value) })} />
+            <Label htmlFor="y">Y</Label>
+            <Input id="y" aria-label="Y" type="number" value={elementData.y} onChange={e => updateRoom(selected.id, { y: Number(e.target.value) })} />
+            <Label htmlFor="width">Width</Label>
+            <Input id="width" aria-label="Width" type="number" value={elementData.width} onChange={e => updateRoom(selected.id, { width: Number(e.target.value) })} />
+            <Label htmlFor="height">Height</Label>
+            <Input id="height" aria-label="Height" type="number" value={elementData.height} onChange={e => updateRoom(selected.id, { height: Number(e.target.value) })} />
+            <Label htmlFor="color">Color</Label>
+            <Input id="color" aria-label="Color" type="color" value={elementData.color} onChange={e => updateRoom(selected.id, { color: e.target.value })} />
+            <Label htmlFor="texture">Texture</Label>
+            <Select value={elementData.texture || "solid"} onValueChange={val => updateRoom(selected.id, { texture: val })} aria-label="Texture">
+              <SelectTrigger id="texture">
+                <SelectValue placeholder="Select texture" />
+              </SelectTrigger>
+              <SelectContent>
+                {TEXTURE_PATTERNS.map((pattern) => (
+                  <SelectItem key={pattern.id} value={pattern.id}>{pattern.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Label htmlFor="layer-assignment">Layer Assignment</Label>
+            <Select value={elementData.layer || layers[0].id} onValueChange={val => updateRoom(selected.id, { layer: val })} aria-label="Layer Assignment">
+              <SelectTrigger id="layer-assignment">
+                <SelectValue placeholder="Select layer" />
+              </SelectTrigger>
+              <SelectContent>
+                {layers.map((layer) => (
+                  <SelectItem key={layer.id} value={layer.id}>{layer.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </div>
+          <div className="mt-2">
+            <div className="font-semibold mb-1">Quick Colors</div>
+            <div className="flex gap-2">
+              {MATERIAL_SWATCHES.map((swatch) => (
+                <button key={swatch.id} type="button" aria-label={swatch.name} style={{ background: swatch.color, width: 24, height: 24, borderRadius: 4, border: "1px solid #ccc" }} onClick={() => updateRoom(selected.id, { color: swatch.color })} />
+              ))}
+            </div>
+          </div>
+          <Button type="button" variant="destructive" aria-label="Delete" onClick={() => handleDelete(selected)}>
+            Delete
+          </Button>
+        </form>
       );
     }
+
+    // Wall properties
+    if (selected.type === "wall") {
+      return (
+        <form className="space-y-4" aria-label="Wall Properties">
+          <div className="grid grid-cols-2 gap-2">
+            <Label htmlFor="wall-type" className="font-semibold col-span-2">Wall Type</Label>
+            <Label htmlFor="color">Color</Label>
+            <Input id="color" aria-label="Color" type="color" value={elementData.color} onChange={e => updateWall(selected.id, { color: e.target.value })} />
+            <span className="font-semibold col-span-2">Wall Thickness</span>
+            <Slider id="thickness" aria-label="Wall Thickness" min={4} max={24} value={[elementData.thickness]} onValueChange={val => updateWall(selected.id, { thickness: val[0] })} />
+            <div className="col-span-2 text-xs">{elementData.thickness}px</div>
+          </div>
+          <Button type="button" variant="destructive" aria-label="Delete" onClick={() => handleDelete(selected)}>
+            Delete
+          </Button>
+        </form>
+      );
+    }
+
+    // Furniture properties
     if (selected.type === "furniture") {
-      const furn = furniture.find((f) => f.id === selected.id);
-      if (!furn) return null;
-      objectProps = (
-        <div>
-          <h4 className="text-sm font-medium mb-2">Furniture Properties</h4>
-          <Label htmlFor="furn-label">Label</Label>
-          <Input id="furn-label" value={furn.label || ""} aria-label="Label" readOnly />
-          <Label htmlFor="furn-x">X</Label>
-          <Input id="furn-x" value={furn.x} aria-label="X" readOnly />
-          <Label htmlFor="furn-y">Y</Label>
-          <Input id="furn-y" value={furn.y} aria-label="Y" readOnly />
-          <Label htmlFor="furn-width">Width</Label>
-          <Input id="furn-width" value={furn.width} aria-label="Width" readOnly />
-          <Label htmlFor="furn-height">Height</Label>
-          <Input id="furn-height" value={furn.height} aria-label="Height" readOnly />
-          <Label htmlFor="furn-color">Color</Label>
-          <Input id="furn-color" value={furn.color} aria-label="Color" readOnly />
-        </div>
+      return (
+        <form className="space-y-4" aria-label="Furniture Properties">
+          <div className="grid grid-cols-2 gap-2">
+            <Label htmlFor="label">Label</Label>
+            <Input id="label" aria-label="Label" value={elementData.label} onChange={e => updateFurniture(selected.id, { label: e.target.value })} />
+            <Label htmlFor="x">X</Label>
+            <Input id="x" aria-label="X" type="number" value={elementData.x} onChange={e => updateFurniture(selected.id, { x: Number(e.target.value) })} />
+            <Label htmlFor="y">Y</Label>
+            <Input id="y" aria-label="Y" type="number" value={elementData.y} onChange={e => updateFurniture(selected.id, { y: Number(e.target.value) })} />
+            <Label htmlFor="width">Width</Label>
+            <Input id="width" aria-label="Width" type="number" value={elementData.width} onChange={e => updateFurniture(selected.id, { width: Number(e.target.value) })} />
+            <Label htmlFor="height">Height</Label>
+            <Input id="height" aria-label="Height" type="number" value={elementData.height} onChange={e => updateFurniture(selected.id, { height: Number(e.target.value) })} />
+            <Label htmlFor="color">Color</Label>
+            <Input id="color" aria-label="Color" type="color" value={elementData.color} onChange={e => updateFurniture(selected.id, { color: e.target.value })} />
+          </div>
+          <Button type="button" variant="destructive" aria-label="Delete" onClick={() => handleDelete(selected)}>
+            Delete
+          </Button>
+        </form>
       );
     }
-    // Quick Colors section
-    const quickColors = (
-      <div className="mt-4">
-        <h4 className="text-xs font-semibold mb-2">Quick Colors</h4>
-        <div className="flex gap-2 flex-wrap">
-          {MATERIAL_SWATCHES.map((swatch) => (
-            <div key={swatch.id} className="w-6 h-6 rounded border" style={{ backgroundColor: swatch.color }} title={swatch.name} />
+
+    return null;
+  }
+
+  function renderLayerManagement() {
+    return (
+      <div>
+        <h2 className="text-lg font-bold mb-2" role="heading" aria-level="2">Layer Management</h2>
+        <div className="grid grid-cols-2 gap-2">
+          {layers.map((layer) => (
+            <div key={layer.id} className="p-2 border rounded flex flex-col gap-1">
+              <span className="font-semibold" style={{ color: layer.color }}>{layer.name}</span>
+              <span className="text-xs">ID: {layer.id}</span>
+            </div>
           ))}
         </div>
       </div>
     );
-    // Texture dropdown
-    const textureDropdown = (
-      <div className="mt-4">
-        <Label htmlFor="texture-select">Texture</Label>
-        <Select id="texture-select" aria-label="Texture">
-          <SelectTrigger>
-            <SelectValue placeholder="Select texture" />
-          </SelectTrigger>
-          <SelectContent>
-            {TEXTURE_PATTERNS.map((pattern) => (
-              <SelectItem key={pattern.id} value={pattern.id}>{pattern.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    );
-    // Layer Assignment dropdown
-    const layerAssignment = (
-      <div className="mt-4">
-        <Label htmlFor="layer-select">Layer Assignment</Label>
-        <Select id="layer-select" aria-label="Layer Assignment">
-          <SelectTrigger>
-            <SelectValue placeholder="Select layer" />
-          </SelectTrigger>
-          <SelectContent>
-            {layers.map((layer) => (
-              <SelectItem key={layer.id} value={layer.id}>{layer.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    );
-    return (
-      <div>
-        {objectProps}
-        {quickColors}
-        {textureDropdown}
-        {layerAssignment}
-      </div>
-    );
   }
-  const {
-    selectedElements,
-    walls,
-    rooms,
-    furniture,
-    updateWall,
-    updateRoom,
-    updateFurniture,
-    removeWall,
-    removeRoom,
-    removeFurniture,
-    clearSelection,
-  } = useFloorPlanStore();
 
-  const [layers, setLayers] = useState(DEFAULT_LAYERS);
-  const [activeTab, setActiveTab] = useState("properties");
-
-  // ...existing code...
-
-  // Place the main return block at the end of the component
   return (
-    <FloatingPanel panelId="properties">
+    <FloatingPanel panelId={panelId}>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="properties" data-testid="properties-tab">Properties</TabsTrigger>
-          <TabsTrigger value="layers" data-testid="layers-tab">Layers</TabsTrigger>
+          <TabsTrigger value="properties" role="tab" aria-label="Properties">Properties</TabsTrigger>
+          <TabsTrigger value="layers" role="tab" aria-label="Layers">Layers</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="properties" className="mt-4" data-testid="properties-tab-content">
-          <ScrollArea className="h-[400px]">
-            {renderElementProperties()}
-          </ScrollArea>
-        </TabsContent>
-
-        <TabsContent value="layers" className="mt-4" data-testid="layers-tab-content">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium" data-testid="layer-management-header">Layer Management</h4>
-              <Button variant="outline" size="sm" className="text-xs" data-testid="add-layer-button">
-                Add Layer
-              </Button>
+        <TabsContent value="properties" forceMount>
+          <h2 className="text-lg font-bold mb-2" role="heading" aria-level="2" data-testid="properties-header">Properties</h2>
+          {renderElementProperties()}
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg" data-testid="selection-status-area">
+            <div className="text-xs text-muted-foreground">
+              <div className="font-semibold mb-1">Selection Status</div>
+              {selectedElements.length === 0 ? (
+                <div className="flex items-center gap-2" data-testid="no-selection-status">
+                  <span>Select objects on the canvas to edit their properties</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2" data-testid="selection-status">
+                  <span>
+                    {selectedElements.length > 1
+                      ? `${selectedElements.length} objects selected`
+                      : `${selectedElements.length} object selected`}
+                  </span>
+                </div>
+              )}
             </div>
-
-            <ScrollArea className="h-[350px]">
-              <div className="space-y-2">
-                {layers.map((layer) => (
-                  <Card key={layer.id} className="p-3" data-testid={`layer-card-${layer.id}`}>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-4 h-4 rounded border border-border/40"
-                        style={{ backgroundColor: layer.color }}
-                        data-testid={`layer-color-${layer.id}`}
-                      />
-
-                      <div className="flex-1">
-                        <div className="font-medium text-sm" data-testid={`layer-name-${layer.id}`}>{layer.name}</div>
-                        <div className="text-xs text-muted-foreground" data-testid={`layer-id-${layer.id}`}>{layer.id}</div>
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleLayerVisibility(layer.id)}
-                              className="h-6 w-6 p-0"
-                              data-testid={`layer-visibility-btn-${layer.id}`}
-                            >
-                              {layer.visible ? (
-                                <Eye className="h-3 w-3" />
-                              ) : (
-                                <EyeOff className="h-3 w-3" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {layer.visible ? "Hide" : "Show"} layer
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleLayerLock(layer.id)}
-                              className="h-6 w-6 p-0"
-                              data-testid={`layer-lock-btn-${layer.id}`}
-                            >
-                              {layer.locked ? (
-                                <Lock className="h-3 w-3" />
-                              ) : (
-                                <Unlock className="h-3 w-3" />
-                              )}
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {layer.locked ? "Unlock" : "Lock"} layer
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </ScrollArea>
-
-            {/* Layer Tips */}
-            <Alert data-testid="layer-tips-alert">
-              <Info className="h-4 w-4" />
-              <AlertDescription className="text-xs">
-                Use layers to organize your floor plan elements. Hidden layers
-                won't be visible in the canvas, and locked layers can't be
-                edited.
-              </AlertDescription>
-            </Alert>
           </div>
         </TabsContent>
+        <TabsContent value="layers" forceMount>
+          {renderLayerManagement()}
+        </TabsContent>
       </Tabs>
-
-      {/* Selection Status */}
-      <div className="mt-4 p-3 bg-muted/50 rounded-lg" data-testid="selection-status-area">
-        <div className="text-xs text-muted-foreground">
-          {selectedElements.length === 0 ? (
-            <div className="flex items-center gap-2" data-testid="no-selection-status">
-              <Info className="h-3 w-3" />
-              <span>Select objects on the canvas to edit their properties</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2" data-testid="selection-status">
-              <Settings className="h-3 w-3" />
-              <span>
-                {selectedElements.length} object
-                {selectedElements.length !== 1 ? "s" : ""} selected
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
     </FloatingPanel>
   );
 };

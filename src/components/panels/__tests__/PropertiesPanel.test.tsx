@@ -3,13 +3,36 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { PropertiesPanel } from "../PropertiesPanel";
-import useFloorPlanStore from "../../../stores/floorPlanStore";
-import { usePanelStore } from "../../../stores/panelStore";
+// (imports removed, now mocked)
 import { TooltipProvider } from "../../ui/tooltip";
 
 // Mock the stores
-vi.mock("../../../stores/floorPlanStore");
-vi.mock("../../../stores/panelStore");
+let floorPlanStoreState: any;
+vi.mock("../../../stores/floorPlanStore", () => ({
+  __esModule: true,
+  default: () => floorPlanStoreState,
+}));
+vi.mock("../../../stores/panelStore", () => ({
+  __esModule: true,
+  usePanelStore: () => mockPanelStore,
+  PANEL_CONFIGS: {
+    properties: {
+      id: "properties",
+      title: "Properties",
+      icon: "Settings",
+      defaultPosition: { x: 980, y: 80 },
+      defaultSize: { width: 300, height: 450 },
+      minSize: { width: 280, height: 350 },
+      resizable: true,
+      minimizable: true,
+      closable: true,
+      keyboardShortcut: "4",
+      category: "editing",
+      dockable: true,
+      groupable: true,
+    },
+  },
+}));
 
 // Mock react-rnd
 vi.mock("react-rnd", () => ({
@@ -57,19 +80,18 @@ const renderWithProviders = (component: React.ReactElement) => {
 
 describe("PropertiesPanel", () => {
   beforeEach(() => {
-    (useFloorPlanStore as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockFloorPlanStore);
-    (usePanelStore as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockPanelStore);
+    floorPlanStoreState = { ...mockFloorPlanStore };
     vi.clearAllMocks();
   });
 
   it("renders without crashing", () => {
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
     // Prefer getByRole for headings
     expect(screen.getByRole('heading', { name: /properties/i })).toBeInTheDocument();
   });
 
   it("shows no selection message when no elements are selected", () => {
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
     // Prefer getByText for visible messages
     expect(screen.getByText(/no elements selected/i)).toBeInTheDocument();
   });
@@ -84,14 +106,13 @@ describe("PropertiesPanel", () => {
       color: "#FF0000",
       label: "Living Room",
     };
-
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByLabelText(/label/i)).toHaveValue("Living Room");
     expect(screen.getByLabelText(/x/i)).toHaveValue(100);
@@ -108,13 +129,13 @@ describe("PropertiesPanel", () => {
       color: "#808080",
     };
 
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "wall-1", type: "wall" }],
       walls: [mockWall],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByText(/wall type/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/color/i)).toHaveValue("#808080");
@@ -131,13 +152,13 @@ describe("PropertiesPanel", () => {
       label: "Sofa",
     };
 
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "furniture-1", type: "furniture" }],
       furniture: [mockFurniture],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByLabelText(/label/i)).toHaveValue("Sofa");
     expect(screen.getByLabelText(/x/i)).toHaveValue(50);
@@ -159,14 +180,14 @@ describe("PropertiesPanel", () => {
 
     const mockUpdateRoom = vi.fn();
 
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
       updateRoom: mockUpdateRoom,
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     const labelInput = screen.getByLabelText(/label/i);
     fireEvent.change(labelInput, { target: { value: "Bedroom" } });
@@ -191,14 +212,14 @@ describe("PropertiesPanel", () => {
 
     const mockUpdateRoom = vi.fn();
 
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
       updateRoom: mockUpdateRoom,
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     const colorInput = screen.getByLabelText(/color/i);
     fireEvent.change(colorInput, { target: { value: "#00FF00" } });
@@ -224,15 +245,15 @@ describe("PropertiesPanel", () => {
     const mockRemoveRoom = vi.fn();
     const mockClearSelection = vi.fn();
 
-    (useFloorPlanStore as any).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
       removeRoom: mockRemoveRoom,
       clearSelection: mockClearSelection,
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
@@ -244,7 +265,7 @@ describe("PropertiesPanel", () => {
   });
 
   it("switches between Properties and Layers tabs", () => {
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     const layersTab = screen.getByRole('tab', { name: /layers/i });
     fireEvent.click(layersTab);
@@ -252,7 +273,7 @@ describe("PropertiesPanel", () => {
   });
 
   it("displays layer management interface", () => {
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     const layersTab = screen.getByRole('tab', { name: /layers/i });
     fireEvent.click(layersTab);
@@ -273,13 +294,13 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    (useFloorPlanStore as vi.Mock).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByText(/quick colors/i)).toBeInTheDocument();
   });
@@ -296,13 +317,13 @@ describe("PropertiesPanel", () => {
       texture: "solid",
     };
 
-    (useFloorPlanStore as vi.Mock).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByLabelText(/texture/i)).toBeInTheDocument();
   });
@@ -318,31 +339,30 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    (useFloorPlanStore as vi.Mock).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
-    });
+    };
 
-    renderWithProviders(<PropertiesPanel />);
-
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
     expect(screen.getByLabelText(/layer assignment/i)).toBeInTheDocument();
   });
 
   it("displays selection status at the bottom", () => {
-    renderWithProviders(<PropertiesPanel />);
+    renderWithProviders(<PropertiesPanel panelId="properties" />);
 
     expect(screen.getByText(/selection status/i)).toBeInTheDocument();
   });
 
   it("shows correct selection count when multiple elements selected", () => {
-    (useFloorPlanStore as vi.Mock).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [
         { id: "room-1", type: "room" },
         { id: "furniture-1", type: "furniture" },
       ],
-    });
+    };
 
     renderWithProviders(<PropertiesPanel />);
 
@@ -357,11 +377,11 @@ describe("PropertiesPanel", () => {
       color: "#808080",
     };
 
-    (useFloorPlanStore as vi.Mock).mockReturnValue({
+    floorPlanStoreState = {
       ...mockFloorPlanStore,
       selectedElements: [{ id: "wall-1", type: "wall" }],
       walls: [mockWall],
-    });
+    };
 
     renderWithProviders(<PropertiesPanel />);
 

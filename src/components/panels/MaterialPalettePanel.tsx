@@ -537,7 +537,6 @@ export const MaterialPalettePanel: React.FC = () => {
                   max={2}
                   step={0.1}
                   className="mt-2"
-                  role="slider"
                   aria-label="Main Light Intensity"
                 />
               </div>
