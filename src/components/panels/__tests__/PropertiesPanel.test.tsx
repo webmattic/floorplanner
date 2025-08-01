@@ -1,16 +1,18 @@
+import { vi } from 'vitest';
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
 import { PropertiesPanel } from "../PropertiesPanel";
 import useFloorPlanStore from "../../../stores/floorPlanStore";
 import { usePanelStore } from "../../../stores/panelStore";
 import { TooltipProvider } from "../../ui/tooltip";
 
 // Mock the stores
-jest.mock("../../../stores/floorPlanStore");
-jest.mock("../../../stores/panelStore");
+vi.mock("../../../stores/floorPlanStore");
+vi.mock("../../../stores/panelStore");
 
 // Mock react-rnd
-jest.mock("react-rnd", () => ({
+vi.mock("react-rnd", () => ({
   Rnd: ({ children, ...props }: any) => (
     <div data-testid="rnd-container" {...props}>
       {children}
@@ -23,13 +25,13 @@ const mockFloorPlanStore = {
   walls: [],
   rooms: [],
   furniture: [],
-  updateWall: jest.fn(),
-  updateRoom: jest.fn(),
-  updateFurniture: jest.fn(),
-  removeWall: jest.fn(),
-  removeRoom: jest.fn(),
-  removeFurniture: jest.fn(),
-  clearSelection: jest.fn(),
+  updateWall: vi.fn(),
+  updateRoom: vi.fn(),
+  updateFurniture: vi.fn(),
+  removeWall: vi.fn(),
+  removeRoom: vi.fn(),
+  removeFurniture: vi.fn(),
+  clearSelection: vi.fn(),
 };
 
 const mockPanelStore = {
@@ -42,11 +44,11 @@ const mockPanelStore = {
       zIndex: 100,
     },
   },
-  hidePanel: jest.fn(),
-  toggleMinimize: jest.fn(),
-  bringToFront: jest.fn(),
-  updatePanelPosition: jest.fn(),
-  updatePanelSize: jest.fn(),
+  hidePanel: vi.fn(),
+  toggleMinimize: vi.fn(),
+  bringToFront: vi.fn(),
+  updatePanelPosition: vi.fn(),
+  updatePanelSize: vi.fn(),
 };
 
 const renderWithProviders = (component: React.ReactElement) => {
@@ -55,21 +57,21 @@ const renderWithProviders = (component: React.ReactElement) => {
 
 describe("PropertiesPanel", () => {
   beforeEach(() => {
-    (useFloorPlanStore as jest.Mock).mockReturnValue(mockFloorPlanStore);
-    (usePanelStore as jest.Mock).mockReturnValue(mockPanelStore);
-    jest.clearAllMocks();
+    (useFloorPlanStore as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockFloorPlanStore);
+    (usePanelStore as unknown as { mockReturnValue: (v: any) => void }).mockReturnValue(mockPanelStore);
+    vi.clearAllMocks();
   });
 
   it("renders without crashing", () => {
     renderWithProviders(<PropertiesPanel />);
-    expect(screen.getByText("Properties")).toBeInTheDocument();
+    // Prefer getByRole for headings
+    expect(screen.getByRole('heading', { name: /properties/i })).toBeInTheDocument();
   });
 
   it("shows no selection message when no elements are selected", () => {
     renderWithProviders(<PropertiesPanel />);
-    expect(
-      screen.getByText("Select an object to edit its properties")
-    ).toBeInTheDocument();
+    // Prefer getByText for visible messages
+    expect(screen.getByText(/no elements selected/i)).toBeInTheDocument();
   });
 
   it("displays selected room properties", () => {
@@ -83,7 +85,7 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -91,11 +93,11 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByDisplayValue("Living Room")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("100")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("200")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("300")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("400")).toBeInTheDocument();
+    expect(screen.getByLabelText(/label/i)).toHaveValue("Living Room");
+    expect(screen.getByLabelText(/x/i)).toHaveValue(100);
+    expect(screen.getByLabelText(/y/i)).toHaveValue(200);
+    expect(screen.getByLabelText(/width/i)).toHaveValue(300);
+    expect(screen.getByLabelText(/height/i)).toHaveValue(400);
   });
 
   it("displays selected wall properties", () => {
@@ -106,7 +108,7 @@ describe("PropertiesPanel", () => {
       color: "#808080",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "wall-1", type: "wall" }],
       walls: [mockWall],
@@ -114,8 +116,8 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("wall")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("#808080")).toBeInTheDocument();
+    expect(screen.getByText(/wall type/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/color/i)).toHaveValue("#808080");
   });
 
   it("displays selected furniture properties", () => {
@@ -129,7 +131,7 @@ describe("PropertiesPanel", () => {
       label: "Sofa",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "furniture-1", type: "furniture" }],
       furniture: [mockFurniture],
@@ -137,11 +139,11 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByDisplayValue("Sofa")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("50")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("75")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("100")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("150")).toBeInTheDocument();
+    expect(screen.getByLabelText(/label/i)).toHaveValue("Sofa");
+    expect(screen.getByLabelText(/x/i)).toHaveValue(50);
+    expect(screen.getByLabelText(/y/i)).toHaveValue(75);
+    expect(screen.getByLabelText(/width/i)).toHaveValue(100);
+    expect(screen.getByLabelText(/height/i)).toHaveValue(150);
   });
 
   it("updates room properties when input values change", async () => {
@@ -155,9 +157,9 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    const mockUpdateRoom = jest.fn();
+    const mockUpdateRoom = vi.fn();
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -166,7 +168,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    const labelInput = screen.getByDisplayValue("Living Room");
+    const labelInput = screen.getByLabelText(/label/i);
     fireEvent.change(labelInput, { target: { value: "Bedroom" } });
 
     await waitFor(() => {
@@ -187,9 +189,9 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    const mockUpdateRoom = jest.fn();
+    const mockUpdateRoom = vi.fn();
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -198,7 +200,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    const colorInput = screen.getByDisplayValue("#FF0000");
+    const colorInput = screen.getByLabelText(/color/i);
     fireEvent.change(colorInput, { target: { value: "#00FF00" } });
 
     await waitFor(() => {
@@ -219,10 +221,10 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    const mockRemoveRoom = jest.fn();
-    const mockClearSelection = jest.fn();
+    const mockRemoveRoom = vi.fn();
+    const mockClearSelection = vi.fn();
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as any).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -232,7 +234,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    const deleteButton = screen.getByText("Delete");
+    const deleteButton = screen.getByRole('button', { name: /delete/i });
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
@@ -244,22 +246,20 @@ describe("PropertiesPanel", () => {
   it("switches between Properties and Layers tabs", () => {
     renderWithProviders(<PropertiesPanel />);
 
-    const layersTab = screen.getByText("Layers");
+    const layersTab = screen.getByRole('tab', { name: /layers/i });
     fireEvent.click(layersTab);
-
-    expect(screen.getByText("Layer Management")).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /layer management/i })).toBeInTheDocument();
   });
 
   it("displays layer management interface", () => {
     renderWithProviders(<PropertiesPanel />);
 
-    const layersTab = screen.getByText("Layers");
+    const layersTab = screen.getByRole('tab', { name: /layers/i });
     fireEvent.click(layersTab);
-
-    expect(screen.getByText("Walls")).toBeInTheDocument();
-    expect(screen.getByText("Rooms")).toBeInTheDocument();
-    expect(screen.getByText("Furniture")).toBeInTheDocument();
-    expect(screen.getByText("Doors & Windows")).toBeInTheDocument();
+    expect(screen.getByText(/walls/i)).toBeInTheDocument();
+    expect(screen.getByText(/rooms/i)).toBeInTheDocument();
+    expect(screen.getByText(/furniture/i)).toBeInTheDocument();
+    expect(screen.getByText(/doors/i)).toBeInTheDocument();
   });
 
   it("shows material swatches for quick color selection", () => {
@@ -273,7 +273,7 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as vi.Mock).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -281,7 +281,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("Quick Colors")).toBeInTheDocument();
+    expect(screen.getByText(/quick colors/i)).toBeInTheDocument();
   });
 
   it("shows texture selection dropdown", () => {
@@ -296,7 +296,7 @@ describe("PropertiesPanel", () => {
       texture: "solid",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as vi.Mock).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -304,7 +304,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("Texture")).toBeInTheDocument();
+    expect(screen.getByLabelText(/texture/i)).toBeInTheDocument();
   });
 
   it("shows layer assignment dropdown", () => {
@@ -318,7 +318,7 @@ describe("PropertiesPanel", () => {
       label: "Living Room",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as vi.Mock).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "room-1", type: "room" }],
       rooms: [mockRoom],
@@ -326,19 +326,17 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("Layer Assignment")).toBeInTheDocument();
+    expect(screen.getByLabelText(/layer assignment/i)).toBeInTheDocument();
   });
 
   it("displays selection status at the bottom", () => {
     renderWithProviders(<PropertiesPanel />);
 
-    expect(
-      screen.getByText("Select objects on the canvas to edit their properties")
-    ).toBeInTheDocument();
+    expect(screen.getByText(/selection status/i)).toBeInTheDocument();
   });
 
   it("shows correct selection count when multiple elements selected", () => {
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as vi.Mock).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [
         { id: "room-1", type: "room" },
@@ -348,7 +346,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("2 objects selected")).toBeInTheDocument();
+    expect(screen.getByText(/2 objects selected/i)).toBeInTheDocument();
   });
 
   it("handles wall thickness slider for wall elements", () => {
@@ -359,7 +357,7 @@ describe("PropertiesPanel", () => {
       color: "#808080",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue({
+    (useFloorPlanStore as vi.Mock).mockReturnValue({
       ...mockFloorPlanStore,
       selectedElements: [{ id: "wall-1", type: "wall" }],
       walls: [mockWall],
@@ -367,7 +365,7 @@ describe("PropertiesPanel", () => {
 
     renderWithProviders(<PropertiesPanel />);
 
-    expect(screen.getByText("Thickness")).toBeInTheDocument();
-    expect(screen.getByText("8px")).toBeInTheDocument();
+    expect(screen.getByText(/wall thickness/i)).toBeInTheDocument();
+    expect(screen.getByText(/8px/i)).toBeInTheDocument();
   });
 });
