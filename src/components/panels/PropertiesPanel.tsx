@@ -116,6 +116,130 @@ const TEXTURE_PATTERNS = [
 ];
 
 export const PropertiesPanel: React.FC = () => {
+  // Renders properties for selected elements (room, wall, furniture)
+  function renderElementProperties() {
+    if (!selectedElements || selectedElements.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+          <h4 className="text-sm font-medium mb-2" data-testid="properties-header">Properties</h4>
+          <div data-testid="no-selection-message">No elements selected</div>
+        </div>
+      );
+    }
+    const selected = selectedElements[0];
+    let objectProps = null;
+    if (selected.type === "room") {
+      const room = rooms.find((r) => r.id === selected.id);
+      if (!room) return null;
+      objectProps = (
+        <div>
+          <h4 className="text-sm font-medium mb-2">Room Properties</h4>
+          <Label htmlFor="room-label">Label</Label>
+          <Input id="room-label" value={room.label || ""} aria-label="Label" readOnly />
+          <Label htmlFor="room-x">X</Label>
+          <Input id="room-x" value={room.x} aria-label="X" readOnly />
+          <Label htmlFor="room-y">Y</Label>
+          <Input id="room-y" value={room.y} aria-label="Y" readOnly />
+          <Label htmlFor="room-width">Width</Label>
+          <Input id="room-width" value={room.width} aria-label="Width" readOnly />
+          <Label htmlFor="room-height">Height</Label>
+          <Input id="room-height" value={room.height} aria-label="Height" readOnly />
+          <Label htmlFor="room-color">Color</Label>
+          <Input id="room-color" value={room.color} aria-label="Color" readOnly />
+        </div>
+      );
+    }
+    if (selected.type === "wall") {
+      const wall = walls.find((w) => w.id === selected.id);
+      if (!wall) return null;
+      objectProps = (
+        <div>
+          <h4 className="text-sm font-medium mb-2">Wall Properties</h4>
+          <Label htmlFor="wall-type">Wall Type</Label>
+          <Input id="wall-type" value={wall.type || "Standard"} aria-label="Wall Type" readOnly />
+          <Label htmlFor="wall-color">Color</Label>
+          <Input id="wall-color" value={wall.color} aria-label="Color" readOnly />
+          <Label htmlFor="wall-thickness">Wall Thickness</Label>
+          <div className="flex items-center gap-2">
+            <Slider id="wall-thickness" value={[wall.thickness || 8]} min={1} max={24} step={1} aria-label="Wall Thickness" readOnly />
+            <span>{(wall.thickness || 8) + "px"}</span>
+          </div>
+        </div>
+      );
+    }
+    if (selected.type === "furniture") {
+      const furn = furniture.find((f) => f.id === selected.id);
+      if (!furn) return null;
+      objectProps = (
+        <div>
+          <h4 className="text-sm font-medium mb-2">Furniture Properties</h4>
+          <Label htmlFor="furn-label">Label</Label>
+          <Input id="furn-label" value={furn.label || ""} aria-label="Label" readOnly />
+          <Label htmlFor="furn-x">X</Label>
+          <Input id="furn-x" value={furn.x} aria-label="X" readOnly />
+          <Label htmlFor="furn-y">Y</Label>
+          <Input id="furn-y" value={furn.y} aria-label="Y" readOnly />
+          <Label htmlFor="furn-width">Width</Label>
+          <Input id="furn-width" value={furn.width} aria-label="Width" readOnly />
+          <Label htmlFor="furn-height">Height</Label>
+          <Input id="furn-height" value={furn.height} aria-label="Height" readOnly />
+          <Label htmlFor="furn-color">Color</Label>
+          <Input id="furn-color" value={furn.color} aria-label="Color" readOnly />
+        </div>
+      );
+    }
+    // Quick Colors section
+    const quickColors = (
+      <div className="mt-4">
+        <h4 className="text-xs font-semibold mb-2">Quick Colors</h4>
+        <div className="flex gap-2 flex-wrap">
+          {MATERIAL_SWATCHES.map((swatch) => (
+            <div key={swatch.id} className="w-6 h-6 rounded border" style={{ backgroundColor: swatch.color }} title={swatch.name} />
+          ))}
+        </div>
+      </div>
+    );
+    // Texture dropdown
+    const textureDropdown = (
+      <div className="mt-4">
+        <Label htmlFor="texture-select">Texture</Label>
+        <Select id="texture-select" aria-label="Texture">
+          <SelectTrigger>
+            <SelectValue placeholder="Select texture" />
+          </SelectTrigger>
+          <SelectContent>
+            {TEXTURE_PATTERNS.map((pattern) => (
+              <SelectItem key={pattern.id} value={pattern.id}>{pattern.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+    // Layer Assignment dropdown
+    const layerAssignment = (
+      <div className="mt-4">
+        <Label htmlFor="layer-select">Layer Assignment</Label>
+        <Select id="layer-select" aria-label="Layer Assignment">
+          <SelectTrigger>
+            <SelectValue placeholder="Select layer" />
+          </SelectTrigger>
+          <SelectContent>
+            {layers.map((layer) => (
+              <SelectItem key={layer.id} value={layer.id}>{layer.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    );
+    return (
+      <div>
+        {objectProps}
+        {quickColors}
+        {textureDropdown}
+        {layerAssignment}
+      </div>
+    );
+  }
   const {
     selectedElements,
     walls,
@@ -133,436 +257,28 @@ export const PropertiesPanel: React.FC = () => {
   const [layers, setLayers] = useState(DEFAULT_LAYERS);
   const [activeTab, setActiveTab] = useState("properties");
 
-  // Get the selected element data
-  const selectedElement = useMemo(() => {
-    if (selectedElements.length === 0) return null;
+  // ...existing code...
 
-    const element = selectedElements[0];
-    switch (element.type) {
-      case "wall":
-        return walls.find((w) => w.id === element.id);
-      case "room":
-        return rooms.find((r) => r.id === element.id);
-      case "furniture":
-        return furniture.find((f) => f.id === element.id);
-      default:
-        return null;
-    }
-  }, [selectedElements, walls, rooms, furniture]);
-
-  const selectedElementType =
-    selectedElements.length > 0 ? selectedElements[0].type : null;
-
-  // Update element properties
-  const updateElementProperty = useCallback(
-    (property: string, value: any) => {
-      if (!selectedElement || selectedElements.length === 0) return;
-
-      const elementId = selectedElements[0].id;
-      const elementType = selectedElements[0].type;
-
-      const updates = { [property]: value };
-
-      switch (elementType) {
-        case "wall":
-          updateWall(elementId, updates);
-          break;
-        case "room":
-          updateRoom(elementId, updates);
-          break;
-        case "furniture":
-          updateFurniture(elementId, updates);
-          break;
-      }
-    },
-    [selectedElement, selectedElements, updateWall, updateRoom, updateFurniture]
-  );
-
-  // Delete selected element
-  const deleteSelectedElement = useCallback(() => {
-    if (selectedElements.length === 0) return;
-
-    const element = selectedElements[0];
-    switch (element.type) {
-      case "wall":
-        removeWall(element.id);
-        break;
-      case "room":
-        removeRoom(element.id);
-        break;
-      case "furniture":
-        removeFurniture(element.id);
-        break;
-    }
-    clearSelection();
-  }, [
-    selectedElements,
-    removeWall,
-    removeRoom,
-    removeFurniture,
-    clearSelection,
-  ]);
-
-  // Duplicate selected element
-  const duplicateSelectedElement = useCallback(() => {
-    if (!selectedElement || selectedElements.length === 0) return;
-
-    const elementType = selectedElements[0].type;
-    const offset = 20; // Offset for duplicate
-
-    switch (elementType) {
-      case "room":
-        const roomData = selectedElement as any;
-        updateRoom("", {
-          ...roomData,
-          x: roomData.x + offset,
-          y: roomData.y + offset,
-          label: `${roomData.label} Copy`,
-        });
-        break;
-      case "furniture":
-        const furnitureData = selectedElement as any;
-        updateFurniture("", {
-          ...furnitureData,
-          x: furnitureData.x + offset,
-          y: furnitureData.y + offset,
-          label: `${furnitureData.label} Copy`,
-        });
-        break;
-    }
-  }, [selectedElement, selectedElements, updateRoom, updateFurniture]);
-
-  // Layer management
-  const toggleLayerVisibility = useCallback((layerId: string) => {
-    setLayers((prev) =>
-      prev.map((layer) =>
-        layer.id === layerId ? { ...layer, visible: !layer.visible } : layer
-      )
-    );
-  }, []);
-
-  const toggleLayerLock = useCallback((layerId: string) => {
-    setLayers((prev) =>
-      prev.map((layer) =>
-        layer.id === layerId ? { ...layer, locked: !layer.locked } : layer
-      )
-    );
-  }, []);
-
-  // Get element icon
-  const getElementIcon = (type: string) => {
-    switch (type) {
-      case "wall":
-        return Move;
-      case "room":
-        return Square;
-      case "furniture":
-        return Package;
-      case "door":
-        return DoorOpen;
-      case "window":
-        return RectangleHorizontal;
-      case "text":
-        return Type;
-      default:
-        return Settings;
-    }
-  };
-
-  // Render property inputs based on element type
-  const renderElementProperties = () => {
-    if (!selectedElement || !selectedElementType) {
-      return (
-        <div className="text-center py-8">
-          <Settings className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground">
-            Select an object to edit its properties
-          </p>
-        </div>
-      );
-    }
-
-    const IconComponent = getElementIcon(selectedElementType);
-
-    return (
-      <div className="space-y-4">
-        {/* Element Header */}
-        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-          <IconComponent className="h-5 w-5" />
-          <div className="flex-1">
-            <h3 className="font-medium text-sm capitalize">
-              {selectedElementType}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              ID: {selectedElement.id}
-            </p>
-          </div>
-          <Badge variant="outline" className="text-xs">
-            {selectedElements.length} selected
-          </Badge>
-        </div>
-
-        {/* Basic Properties */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium">Basic Properties</h4>
-
-          {/* Label/Name */}
-          {(selectedElementType === "room" ||
-            selectedElementType === "furniture") && (
-            <div className="space-y-1">
-              <Label className="text-xs">Label</Label>
-              <Input
-                value={(selectedElement as any).label || ""}
-                onChange={(e) => updateElementProperty("label", e.target.value)}
-                placeholder="Enter label..."
-                className="h-8 text-xs"
-              />
-            </div>
-          )}
-
-          {/* Position */}
-          {(selectedElementType === "room" ||
-            selectedElementType === "furniture") && (
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">X Position</Label>
-                <Input
-                  type="number"
-                  value={(selectedElement as any).x || 0}
-                  onChange={(e) =>
-                    updateElementProperty("x", Number(e.target.value))
-                  }
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Y Position</Label>
-                <Input
-                  type="number"
-                  value={(selectedElement as any).y || 0}
-                  onChange={(e) =>
-                    updateElementProperty("y", Number(e.target.value))
-                  }
-                  className="h-8 text-xs"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Dimensions */}
-          {(selectedElementType === "room" ||
-            selectedElementType === "furniture") && (
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Width</Label>
-                <Input
-                  type="number"
-                  value={(selectedElement as any).width || 0}
-                  onChange={(e) =>
-                    updateElementProperty("width", Number(e.target.value))
-                  }
-                  className="h-8 text-xs"
-                  min="1"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Height</Label>
-                <Input
-                  type="number"
-                  value={(selectedElement as any).height || 0}
-                  onChange={(e) =>
-                    updateElementProperty("height", Number(e.target.value))
-                  }
-                  className="h-8 text-xs"
-                  min="1"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Wall-specific properties */}
-          {selectedElementType === "wall" && (
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <Label className="text-xs">Thickness</Label>
-                <div className="flex items-center gap-2">
-                  <Slider
-                    value={[(selectedElement as any).thickness || 8]}
-                    onValueChange={([value]: number[]) =>
-                      updateElementProperty("thickness", value)
-                    }
-                    min={2}
-                    max={20}
-                    step={1}
-                    className="flex-1"
-                  />
-                  <span className="text-xs text-muted-foreground w-8">
-                    {(selectedElement as any).thickness || 8}px
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <Separator />
-
-        {/* Material Properties */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium flex items-center gap-2">
-            <Palette className="h-4 w-4" />
-            Material & Color
-          </h4>
-
-          {/* Color Picker */}
-          <div className="space-y-2">
-            <Label className="text-xs">Color</Label>
-            <div className="flex gap-2">
-              <Input
-                type="color"
-                value={(selectedElement as any).color || "#808080"}
-                onChange={(e) => updateElementProperty("color", e.target.value)}
-                className="w-12 h-8 p-1 border rounded"
-              />
-              <Input
-                type="text"
-                value={(selectedElement as any).color || "#808080"}
-                onChange={(e) => updateElementProperty("color", e.target.value)}
-                className="flex-1 h-8 text-xs"
-                placeholder="#808080"
-              />
-            </div>
-          </div>
-
-          {/* Material Swatches */}
-          <div className="space-y-2">
-            <Label className="text-xs">Quick Colors</Label>
-            <div className="grid grid-cols-6 gap-1">
-              {MATERIAL_SWATCHES.slice(0, 12).map((swatch) => (
-                <Tooltip key={swatch.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      className="w-6 h-6 rounded border border-border/40 hover:scale-110 transition-transform"
-                      style={{ backgroundColor: swatch.color }}
-                      onClick={() =>
-                        updateElementProperty("color", swatch.color)
-                      }
-                      title={swatch.name}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">{swatch.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-          </div>
-
-          {/* Texture Selection */}
-          <div className="space-y-2">
-            <Label className="text-xs">Texture</Label>
-            <Select
-              value={(selectedElement as any).texture || "solid"}
-              onValueChange={(value) => updateElementProperty("texture", value)}
-            >
-              <SelectTrigger className="h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {TEXTURE_PATTERNS.map((texture) => (
-                  <SelectItem key={texture.id} value={texture.id}>
-                    <div className="flex items-center gap-2">
-                      <span>{texture.icon}</span>
-                      <span>{texture.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Layer Assignment */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium flex items-center gap-2">
-            <Layers className="h-4 w-4" />
-            Layer Assignment
-          </h4>
-
-          <Select
-            value={(selectedElement as any).layerId || selectedElementType}
-            onValueChange={(value) => updateElementProperty("layerId", value)}
-          >
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {layers.map((layer) => (
-                <SelectItem key={layer.id} value={layer.id}>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-sm border"
-                      style={{ backgroundColor: layer.color }}
-                    />
-                    <span>{layer.name}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Separator />
-
-        {/* Actions */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium">Actions</h4>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={duplicateSelectedElement}
-              className="flex items-center gap-2"
-            >
-              <Copy className="h-3 w-3" />
-              <span className="text-xs">Duplicate</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={deleteSelectedElement}
-              className="flex items-center gap-2 text-destructive hover:text-destructive"
-            >
-              <Trash2 className="h-3 w-3" />
-              <span className="text-xs">Delete</span>
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
+  // Place the main return block at the end of the component
   return (
     <FloatingPanel panelId="properties">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="properties">Properties</TabsTrigger>
-          <TabsTrigger value="layers">Layers</TabsTrigger>
+          <TabsTrigger value="properties" data-testid="properties-tab">Properties</TabsTrigger>
+          <TabsTrigger value="layers" data-testid="layers-tab">Layers</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="properties" className="mt-4">
+        <TabsContent value="properties" className="mt-4" data-testid="properties-tab-content">
           <ScrollArea className="h-[400px]">
             {renderElementProperties()}
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="layers" className="mt-4">
+        <TabsContent value="layers" className="mt-4" data-testid="layers-tab-content">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium">Layer Management</h4>
-              <Button variant="outline" size="sm" className="text-xs">
+              <h4 className="text-sm font-medium" data-testid="layer-management-header">Layer Management</h4>
+              <Button variant="outline" size="sm" className="text-xs" data-testid="add-layer-button">
                 Add Layer
               </Button>
             </div>
@@ -570,18 +286,17 @@ export const PropertiesPanel: React.FC = () => {
             <ScrollArea className="h-[350px]">
               <div className="space-y-2">
                 {layers.map((layer) => (
-                  <Card key={layer.id} className="p-3">
+                  <Card key={layer.id} className="p-3" data-testid={`layer-card-${layer.id}`}>
                     <div className="flex items-center gap-3">
                       <div
                         className="w-4 h-4 rounded border border-border/40"
                         style={{ backgroundColor: layer.color }}
+                        data-testid={`layer-color-${layer.id}`}
                       />
 
                       <div className="flex-1">
-                        <div className="font-medium text-sm">{layer.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {layer.id}
-                        </div>
+                        <div className="font-medium text-sm" data-testid={`layer-name-${layer.id}`}>{layer.name}</div>
+                        <div className="text-xs text-muted-foreground" data-testid={`layer-id-${layer.id}`}>{layer.id}</div>
                       </div>
 
                       <div className="flex items-center gap-1">
@@ -592,6 +307,7 @@ export const PropertiesPanel: React.FC = () => {
                               size="sm"
                               onClick={() => toggleLayerVisibility(layer.id)}
                               className="h-6 w-6 p-0"
+                              data-testid={`layer-visibility-btn-${layer.id}`}
                             >
                               {layer.visible ? (
                                 <Eye className="h-3 w-3" />
@@ -614,6 +330,7 @@ export const PropertiesPanel: React.FC = () => {
                               size="sm"
                               onClick={() => toggleLayerLock(layer.id)}
                               className="h-6 w-6 p-0"
+                              data-testid={`layer-lock-btn-${layer.id}`}
                             >
                               {layer.locked ? (
                                 <Lock className="h-3 w-3" />
@@ -636,7 +353,7 @@ export const PropertiesPanel: React.FC = () => {
             </ScrollArea>
 
             {/* Layer Tips */}
-            <Alert>
+            <Alert data-testid="layer-tips-alert">
               <Info className="h-4 w-4" />
               <AlertDescription className="text-xs">
                 Use layers to organize your floor plan elements. Hidden layers
@@ -649,15 +366,15 @@ export const PropertiesPanel: React.FC = () => {
       </Tabs>
 
       {/* Selection Status */}
-      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+      <div className="mt-4 p-3 bg-muted/50 rounded-lg" data-testid="selection-status-area">
         <div className="text-xs text-muted-foreground">
           {selectedElements.length === 0 ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-testid="no-selection-status">
               <Info className="h-3 w-3" />
               <span>Select objects on the canvas to edit their properties</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" data-testid="selection-status">
               <Settings className="h-3 w-3" />
               <span>
                 {selectedElements.length} object

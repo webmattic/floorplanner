@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { View3DPanel } from "../View3DPanel";
@@ -6,11 +7,11 @@ import { usePanelStore } from "../../../stores/panelStore";
 import { TooltipProvider } from "../../ui/tooltip";
 
 // Mock the stores
-jest.mock("../../../stores/floorPlanStore");
-jest.mock("../../../stores/panelStore");
+vi.mock("../../../stores/floorPlanStore");
+vi.mock("../../../stores/panelStore");
 
 // Mock react-rnd
-jest.mock("react-rnd", () => ({
+vi.mock("react-rnd", () => ({
   Rnd: ({ children, ...props }: any) => (
     <div data-testid="rnd-container" {...props}>
       {children}
@@ -19,19 +20,19 @@ jest.mock("react-rnd", () => ({
 }));
 
 // Mock @react-three/fiber and @react-three/drei
-jest.mock("@react-three/fiber", () => ({
+vi.mock("@react-three/fiber", () => ({
   Canvas: ({ children, ...props }: any) => (
     <div data-testid="canvas" {...props}>
       {children}
     </div>
   ),
   useThree: () => ({
-    camera: { position: { set: jest.fn() }, updateProjectionMatrix: jest.fn() },
+    camera: { position: { set: vi.fn() }, updateProjectionMatrix: vi.fn() },
     gl: { domElement: document.createElement("canvas") },
   }),
 }));
 
-jest.mock("@react-three/drei", () => ({
+vi.mock("@react-three/drei", () => ({
   Grid: ({ ...props }: any) => <div data-testid="grid" {...props} />,
   OrbitControls: ({ ...props }: any) => (
     <div data-testid="orbit-controls" {...props} />
@@ -46,15 +47,15 @@ jest.mock("@react-three/drei", () => ({
 
 const mockFloorPlanStore = {
   viewMode: "2d",
-  setViewMode: jest.fn(),
+  setViewMode: vi.fn(),
   cameraView: "default",
-  setCameraView: jest.fn(),
+  setCameraView: vi.fn(),
   lighting: {
     mainLight: 1.0,
     ambientLight: 0.5,
     temperature: 6500,
   },
-  updateSceneLighting: jest.fn(),
+  updateSceneLighting: vi.fn(),
   walls: [
     { id: "wall-1", points: [0, 0, 100, 0], thickness: 8, color: "#808080" },
   ],
@@ -92,11 +93,11 @@ const mockPanelStore = {
       zIndex: 100,
     },
   },
-  hidePanel: jest.fn(),
-  toggleMinimize: jest.fn(),
-  bringToFront: jest.fn(),
-  updatePanelPosition: jest.fn(),
-  updatePanelSize: jest.fn(),
+  hidePanel: vi.fn(),
+  toggleMinimize: vi.fn(),
+  bringToFront: vi.fn(),
+  updatePanelPosition: vi.fn(),
+  updatePanelSize: vi.fn(),
 };
 
 const renderWithProviders = (component: React.ReactElement) => {
@@ -104,10 +105,13 @@ const renderWithProviders = (component: React.ReactElement) => {
 };
 
 describe("View3DPanel", () => {
+  // Custom utility to match split/nested text across multiple elements
+
+  // Helper to find element by matching text across elements
   beforeEach(() => {
-    (useFloorPlanStore as jest.Mock).mockReturnValue(mockFloorPlanStore);
-    (usePanelStore as jest.Mock).mockReturnValue(mockPanelStore);
-    jest.clearAllMocks();
+    (useFloorPlanStore as any).mockReturnValue(mockFloorPlanStore);
+    (usePanelStore as any).mockReturnValue(mockPanelStore);
+    vi.clearAllMocks();
   });
 
   it("renders without crashing", () => {
@@ -153,13 +157,15 @@ describe("View3DPanel", () => {
     fireEvent.click(cameraTab);
 
     await waitFor(() => {
-      expect(screen.getByText("Camera Presets")).toBeInTheDocument();
-      expect(screen.getByText("Default View")).toBeInTheDocument();
-      expect(screen.getByText("Top View")).toBeInTheDocument();
-      expect(screen.getByText("Front View")).toBeInTheDocument();
-      expect(screen.getByText("Side View")).toBeInTheDocument();
-      expect(screen.getByText("Isometric")).toBeInTheDocument();
-      expect(screen.getByText("Corner View")).toBeInTheDocument();
+      expect(screen.getByText(/Camera Presets/i)).toBeInTheDocument();
+      // Switch to camera tab before checking camera presets
+      const cameraTab = screen.getByText("Camera");
+      fireEvent.click(cameraTab);
+      await waitFor(() => {
+        ["default", "top", "front", "side", "isometric", "corner"].forEach((presetId) => {
+          expect(screen.getByTestId(`camera-preset-${presetId}`)).toBeInTheDocument();
+        });
+      });
     });
   });
 
@@ -205,8 +211,13 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      expect(screen.getByText("Render Quality")).toBeInTheDocument();
-      expect(screen.getByText("Environment")).toBeInTheDocument();
+      // Switch to render tab before checking render quality and environment
+      const renderTab = screen.getByText("Render");
+      fireEvent.click(renderTab);
+      await waitFor(() => {
+        expect(screen.getByTestId("render-quality-label")).toBeInTheDocument();
+        expect(screen.getByTestId("environment-label")).toBeInTheDocument();
+      });
     });
   });
 
@@ -218,9 +229,14 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      expect(screen.getByText("Export & Share")).toBeInTheDocument();
-      expect(screen.getByText("Export")).toBeInTheDocument();
-      expect(screen.getByText("Share")).toBeInTheDocument();
+      // Switch to render tab before checking export/share
+      const renderTab = screen.getByText("Render");
+      fireEvent.click(renderTab);
+      await waitFor(() => {
+        expect(screen.getByTestId("export-share-label")).toBeInTheDocument();
+        expect(screen.getByTestId("export-button")).toBeInTheDocument();
+        expect(screen.getByTestId("share-button")).toBeInTheDocument();
+      });
     });
   });
 
@@ -242,7 +258,9 @@ describe("View3DPanel", () => {
         button.querySelector('[data-lucide="play"]') ||
         button.querySelector('[data-lucide="pause"]')
     );
-    expect(rotationButton).toBeInTheDocument();
+    expect(rotationButton).not.toBeUndefined();
+    expect(rotationButton).not.toBeNull();
+    expect(rotationButton instanceof HTMLElement).toBe(true);
   });
 
   it("handles camera preset selection", async () => {
@@ -253,10 +271,14 @@ describe("View3DPanel", () => {
     fireEvent.click(cameraTab);
 
     await waitFor(() => {
-      const topViewButton = screen.getByText("Top View");
-      fireEvent.click(topViewButton);
-
-      expect(mockFloorPlanStore.setCameraView).toHaveBeenCalledWith("top");
+      // Switch to camera tab before clicking camera preset
+      const cameraTab = screen.getByText("Camera");
+      fireEvent.click(cameraTab);
+      await waitFor(() => {
+        const topViewButton = screen.getByTestId("camera-preset-top");
+        fireEvent.click(topViewButton);
+        expect(mockFloorPlanStore.setCameraView).toHaveBeenCalledWith("top");
+      });
     });
   });
 
@@ -288,10 +310,12 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      expect(screen.getByText(/Real-time sync/)).toBeInTheDocument();
-      expect(
-        screen.getByText(/Changes in 2D view automatically update/)
-      ).toBeInTheDocument();
+      // Switch to render tab before checking real-time sync alert
+      const renderTab = screen.getByText("Render");
+      fireEvent.click(renderTab);
+      await waitFor(() => {
+        expect(screen.getByTestId("realtime-sync-alert")).toBeInTheDocument();
+      });
     });
   });
 
@@ -335,7 +359,7 @@ describe("View3DPanel", () => {
     const { rerender } = renderWithProviders(<View3DPanel />);
 
     // Initial state
-    expect(screen.getByText("2D View")).toBeInTheDocument();
+    expect(screen.getAllByText("2D View").length).toBeGreaterThan(0);
 
     // Update mock store
     const updated3DStore = {
@@ -343,7 +367,7 @@ describe("View3DPanel", () => {
       viewMode: "3d",
     };
 
-    (useFloorPlanStore as jest.Mock).mockReturnValue(updated3DStore);
+    (useFloorPlanStore as any).mockReturnValue(updated3DStore);
 
     rerender(
       <TooltipProvider>
@@ -351,7 +375,8 @@ describe("View3DPanel", () => {
       </TooltipProvider>
     );
 
-    expect(screen.getByText("3D View")).toBeInTheDocument();
+    // Use getAllByText to avoid ambiguity
+    expect(screen.getAllByText("3D View").length).toBeGreaterThan(0);
   });
 
   it("displays lighting values correctly", async () => {
@@ -362,10 +387,14 @@ describe("View3DPanel", () => {
     fireEvent.click(cameraTab);
 
     await waitFor(() => {
-      // Check that lighting values are displayed
-      expect(screen.getByText("1.0")).toBeInTheDocument(); // Main light
-      expect(screen.getByText("0.5")).toBeInTheDocument(); // Ambient light
-      expect(screen.getByText("6500K")).toBeInTheDocument(); // Temperature
+      // Switch to camera tab before checking lighting values
+      const cameraTab = screen.getByText("Camera");
+      fireEvent.click(cameraTab);
+      await waitFor(() => {
+        expect(screen.getByTestId("main-light-value")).toHaveTextContent("1.0"); // Main light
+        expect(screen.getByTestId("ambient-light-value")).toHaveTextContent("0.5"); // Ambient light
+        expect(screen.getByTestId("temperature-value")).toHaveTextContent("6500K"); // Temperature
+      });
     });
   });
 

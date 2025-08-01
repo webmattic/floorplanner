@@ -100,7 +100,7 @@ const DEFAULT_LAYERS: Omit<Layer, "objectCount">[] = [
     type: "default",
   },
   {
-    id: "annotations",
+    id: "text-labels",
     name: "Text & Labels",
     color: "#9370DB",
     visible: true,
@@ -170,7 +170,7 @@ export const LayersPanel: React.FC = () => {
       case "dimensions":
         // In a real implementation, you'd have dimension objects
         return 0;
-      case "annotations":
+      case "text-labels":
         // In a real implementation, you'd have text/annotation objects
         return 0;
       default:
@@ -357,7 +357,7 @@ export const LayersPanel: React.FC = () => {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-sm flex items-center gap-2">
+          <h3 className="font-medium text-sm flex items-center gap-2" data-testid="layer-management-header">
             <Layers className="h-4 w-4" />
             Layer Management
           </h3>
@@ -367,7 +367,7 @@ export const LayersPanel: React.FC = () => {
             onOpenChange={setIsCreateDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7">
+              <Button variant="outline" size="sm" className="h-7" data-testid="add-layer-button">
                 <Plus className="h-3 w-3 mr-1" />
                 Add Layer
               </Button>
@@ -441,19 +441,19 @@ export const LayersPanel: React.FC = () => {
               return (
                 <Card
                   key={layer.id}
-                  className={`transition-all duration-200 ${
-                    isDragging ? "opacity-50 scale-95" : ""
-                  } ${isDragOver ? "ring-2 ring-primary/50 bg-primary/5" : ""}`}
+                  className={`transition-all duration-200 ${isDragging ? "opacity-50 scale-95" : ""}
+                    ${isDragOver ? "ring-2 ring-primary/50 bg-primary/5" : ""}`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, layer.id)}
                   onDragOver={(e) => handleDragOver(e, layer.id)}
                   onDragLeave={handleDragLeave}
                   onDrop={(e) => handleDrop(e, layer.id)}
+                  data-testid={`layer-card-${layer.id}`}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-center gap-3">
                       {/* Drag Handle */}
-                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab hover:text-foreground" />
+                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab hover:text-foreground" data-testid="drag-handle" />
 
                       {/* Layer Color & Icon */}
                       <div className="flex items-center gap-2">
@@ -467,21 +467,22 @@ export const LayersPanel: React.FC = () => {
                       {/* Layer Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm truncate">
+                          <span className="font-medium text-sm truncate" data-testid={`layer-name-${layer.id}`}>
                             {layer.name}
                           </span>
                           {layer.type === "default" && (
                             <Badge
                               variant="secondary"
                               className="text-xs px-1 py-0"
+                              data-testid={`layer-default-badge-${layer.id}`}
                             >
                               Default
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {layer.objectCount} object
-                          {layer.objectCount !== 1 ? "s" : ""}
+                        <div className="text-xs text-muted-foreground" data-testid={`layer-object-count-${layer.id}`}
+                          data-layer-id={layer.id}>
+                          {layer.objectCount} object{layer.objectCount !== 1 ? "s" : ""}
                         </div>
                       </div>
 
@@ -583,18 +584,18 @@ export const LayersPanel: React.FC = () => {
         <div className="p-3 bg-muted/50 rounded-lg">
           <div className="text-xs text-muted-foreground space-y-1">
             <div className="flex items-center justify-between">
-              <span>Total Layers:</span>
-              <span className="font-medium">{layers.length}</span>
+              <span data-testid="total-layers-label">Total Layers:</span>
+              <span className="font-medium" data-testid="total-layers-value">{layers.length}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Visible Layers:</span>
-              <span className="font-medium">
+              <span data-testid="visible-layers-label">Visible Layers:</span>
+              <span className="font-medium" data-testid="visible-layers-value">
                 {layers.filter((l) => l.visible).length}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Total Objects:</span>
-              <span className="font-medium">
+              <span data-testid="total-objects-label">Total Objects:</span>
+              <span className="font-medium" data-testid="total-objects-value">
                 {layers.reduce((sum, layer) => sum + layer.objectCount, 0)}
               </span>
             </div>
@@ -604,7 +605,7 @@ export const LayersPanel: React.FC = () => {
         {/* Help Information */}
         <Alert>
           <Info className="h-4 w-4" />
-          <AlertDescription className="text-xs">
+          <AlertDescription className="text-xs" data-testid="layer-help-alert">
             Drag layers to reorder them. Use visibility and lock controls to
             manage your workspace. Default layers cannot be deleted.
           </AlertDescription>

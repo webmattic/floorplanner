@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge.tsx";
 import { Separator } from "../ui/separator.tsx";
 import { Switch } from "../ui/switch";
@@ -18,23 +17,13 @@ import { Label } from "../ui/label.tsx";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
-  Box,
   Camera,
-  Eye,
-  Settings,
   Maximize2,
-  RotateCcw,
-  Sun,
-  Moon,
   Lightbulb,
-  Palette,
-  Grid3x3,
   Move3d,
-  Layers,
   Info,
   Play,
   Pause,
-  SkipForward,
   Download,
   Share2,
   Fullscreen,
@@ -213,114 +202,113 @@ const Scene3D: React.FC<{
   showShadows,
   autoRotate,
 }) => {
-  const { walls, rooms, furniture, lighting } = useFloorPlanStore();
-  const controlsRef = useRef<any>(null);
+    const { walls, rooms, furniture, lighting } = useFloorPlanStore();
+    const controlsRef = useRef<any>(null);
 
-  // Auto-frame scene when content changes
-  useEffect(() => {
-    if (controlsRef.current && cameraPreset === "autoframe") {
-      // Auto-frame logic would go here
-      controlsRef.current.reset();
-    }
-  }, [walls, rooms, furniture, cameraPreset]);
+    // Auto-frame scene when content changes
+    useEffect(() => {
+      if (controlsRef.current && cameraPreset === "autoframe") {
+        // Auto-frame logic would go here
+        controlsRef.current.reset();
+      }
+    }, [walls, rooms, furniture, cameraPreset]);
 
-  return (
-    <>
-      {/* Lighting setup */}
-      <ambientLight intensity={lighting.ambientLight * 0.6} />
-      <directionalLight
-        position={[10, 10, 5]}
-        intensity={lighting.mainLight}
-        castShadow={showShadows}
-        shadow-mapSize-width={
-          quality === "ultra" ? 2048 : quality === "high" ? 1024 : 512
-        }
-        shadow-mapSize-height={
-          quality === "ultra" ? 2048 : quality === "high" ? 1024 : 512
-        }
-      />
-      <pointLight
-        position={[-10, 10, -5]}
-        intensity={lighting.mainLight * 0.3}
-        castShadow={showShadows}
-      />
-
-      {/* Environment */}
-      {environment !== "none" && (
-        <Environment preset={environment as any} background={false} />
-      )}
-
-      {/* Ground plane */}
-      <mesh
-        position={[0, 0, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow={showShadows}
-      >
-        <planeGeometry args={[50, 50]} />
-        <meshStandardMaterial color="#f5f5f5" />
-      </mesh>
-
-      {/* Grid */}
-      {showGrid && (
-        <Grid
-          position={[0, 0.01, 0]}
-          args={[50, 50]}
-          cellSize={1}
-          cellThickness={0.5}
-          cellColor="#cccccc"
-          sectionSize={5}
-          sectionThickness={1}
-          sectionColor="#999999"
-          fadeDistance={25}
-          fadeStrength={1}
-          infiniteGrid={false}
+    return (
+      <>
+        {/* Lighting setup */}
+        <ambientLight intensity={lighting.ambientLight * 0.6} />
+        <directionalLight
+          position={[10, 10, 5]}
+          intensity={lighting.mainLight}
+          castShadow={showShadows}
+          shadow-mapSize-width={
+            quality === "ultra" ? 2048 : quality === "high" ? 1024 : 512
+          }
+          shadow-mapSize-height={
+            quality === "ultra" ? 2048 : quality === "high" ? 1024 : 512
+          }
         />
-      )}
+        <pointLight
+          position={[-10, 10, -5]}
+          intensity={lighting.mainLight * 0.3}
+          castShadow={showShadows}
+        />
 
-      {/* Contact shadows */}
-      {showShadows && (
-        <ContactShadows
+        {/* Environment */}
+        {environment !== "none" && (
+          <Environment preset={environment as any} background={false} />
+        )}
+
+        {/* Ground plane */}
+        <mesh
           position={[0, 0, 0]}
-          opacity={0.4}
-          scale={50}
-          blur={2}
-          far={10}
+          rotation={[-Math.PI / 2, 0, 0]}
+          receiveShadow={showShadows}
+        >
+          <planeGeometry args={[50, 50]} />
+          <meshStandardMaterial color="#f5f5f5" />
+        </mesh>
+
+        {/* Grid */}
+        {showGrid && (
+          <Grid
+            position={[0, 0.01, 0]}
+            args={[50, 50]}
+            cellSize={1}
+            cellThickness={0.5}
+            cellColor="#cccccc"
+            sectionSize={5}
+            sectionThickness={1}
+            sectionColor="#999999"
+            fadeDistance={25}
+            fadeStrength={1}
+            infiniteGrid={false}
+          />
+        )}
+
+        {/* Contact shadows */}
+        {showShadows && (
+          <ContactShadows
+            position={[0, 0, 0]}
+            opacity={0.4}
+            scale={50}
+            blur={2}
+            far={10}
+          />
+        )}
+
+        {/* Render scene objects */}
+        {walls.map((wall) => (
+          <Wall3D key={wall.id} wall={wall} />
+        ))}
+        {rooms.map((room) => (
+          <Room3D key={room.id} room={room} />
+        ))}
+        {furniture.map((item) => (
+          <Furniture3D key={item.id} item={item} />
+        ))}
+
+        {/* Camera controls */}
+        <OrbitControls
+          ref={controlsRef}
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          autoRotate={autoRotate}
+          autoRotateSpeed={0.5}
+          maxPolarAngle={Math.PI / 2.1}
+          minPolarAngle={0.1}
+          enableDamping={true}
+          dampingFactor={0.05}
         />
-      )}
-
-      {/* Render scene objects */}
-      {walls.map((wall) => (
-        <Wall3D key={wall.id} wall={wall} />
-      ))}
-      {rooms.map((room) => (
-        <Room3D key={room.id} room={room} />
-      ))}
-      {furniture.map((item) => (
-        <Furniture3D key={item.id} item={item} />
-      ))}
-
-      {/* Camera controls */}
-      <OrbitControls
-        ref={controlsRef}
-        enablePan={true}
-        enableZoom={true}
-        enableRotate={true}
-        autoRotate={autoRotate}
-        autoRotateSpeed={0.5}
-        maxPolarAngle={Math.PI / 2.1}
-        minPolarAngle={0.1}
-        enableDamping={true}
-        dampingFactor={0.05}
-      />
-    </>
-  );
-};
+      </>
+    );
+  };
 
 export const View3DPanel: React.FC = () => {
   const {
     viewMode,
     setViewMode,
-    cameraView,
     setCameraView,
     lighting,
     updateSceneLighting,
@@ -531,7 +519,7 @@ export const View3DPanel: React.FC = () => {
         <TabsContent value="camera" className="space-y-4 mt-4">
           {/* Camera presets */}
           <div className="space-y-3">
-            <Label className="text-sm">Camera Presets</Label>
+            <Label className="text-sm" data-testid="camera-presets-label">Camera Presets</Label>
             <div className="grid grid-cols-2 gap-2">
               {CAMERA_PRESETS.map((preset) => {
                 const IconComponent = preset.icon;
@@ -547,7 +535,7 @@ export const View3DPanel: React.FC = () => {
                         className="flex items-center gap-2 justify-start h-8"
                       >
                         <IconComponent className="h-3 w-3" />
-                        <span className="text-xs truncate">{preset.name}</span>
+                        <span className="text-xs truncate" data-testid={`camera-preset-${preset.id}`}>{preset.name}</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -572,7 +560,7 @@ export const View3DPanel: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className="text-xs">Main Light</Label>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground" data-testid="main-light-value">
                     {localLighting.mainLight.toFixed(1)}
                   </span>
                 </div>
@@ -591,7 +579,7 @@ export const View3DPanel: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className="text-xs">Ambient Light</Label>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground" data-testid="ambient-light-value">
                     {localLighting.ambientLight.toFixed(1)}
                   </span>
                 </div>
@@ -613,7 +601,7 @@ export const View3DPanel: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label className="text-xs">Temperature</Label>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground" data-testid="temperature-value">
                     {localLighting.temperature}K
                   </span>
                 </div>
@@ -638,7 +626,7 @@ export const View3DPanel: React.FC = () => {
         <TabsContent value="render" className="space-y-4 mt-4">
           {/* Render quality */}
           <div className="space-y-2">
-            <Label className="text-sm">Render Quality</Label>
+            <Label className="text-sm" data-testid="render-quality-label">Render Quality</Label>
             <Select value={quality} onValueChange={setQuality}>
               <SelectTrigger className="h-8">
                 <SelectValue />
@@ -660,7 +648,7 @@ export const View3DPanel: React.FC = () => {
 
           {/* Environment */}
           <div className="space-y-2">
-            <Label className="text-sm">Environment</Label>
+            <Label className="text-sm" data-testid="environment-label">Environment</Label>
             <Select value={environment} onValueChange={setEnvironment}>
               <SelectTrigger className="h-8">
                 <SelectValue />
@@ -684,13 +672,14 @@ export const View3DPanel: React.FC = () => {
 
           {/* Export options */}
           <div className="space-y-3">
-            <Label className="text-sm">Export & Share</Label>
+            <Label className="text-sm" data-testid="export-share-label">Export & Share</Label>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={export3DView}
                 className="flex items-center gap-2 h-8"
+                data-testid="export-button"
               >
                 <Download className="h-3 w-3" />
                 <span className="text-xs">Export</span>
@@ -699,6 +688,7 @@ export const View3DPanel: React.FC = () => {
                 variant="outline"
                 size="sm"
                 className="flex items-center gap-2 h-8"
+                data-testid="share-button"
               >
                 <Share2 className="h-3 w-3" />
                 <span className="text-xs">Share</span>
@@ -709,7 +699,7 @@ export const View3DPanel: React.FC = () => {
           {/* Render info */}
           <Alert>
             <Info className="h-4 w-4" />
-            <AlertDescription className="text-xs">
+            <AlertDescription className="text-xs" data-testid="realtime-sync-alert">
               Real-time sync: Changes in 2D view automatically update the 3D
               visualization.
             </AlertDescription>

@@ -1,20 +1,22 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
+// Vitest provides built-in matchers
 import { FurnitureLibraryPanel } from "../FurnitureLibraryPanel";
 import { TooltipProvider } from "../../ui/tooltip";
 
 // Mock the stores
-jest.mock("../../../stores/floorPlanStore", () => ({
+
+import { vi } from "vitest";
+vi.mock("../../../stores/floorPlanStore", () => ({
   __esModule: true,
   default: () => ({
     gridSize: 50,
     snapToGrid: true,
-    addFurniture: jest.fn(),
+    addFurniture: vi.fn(),
   }),
 }));
 
-jest.mock("../../../stores/panelStore", () => ({
+vi.mock("../../../stores/panelStore", () => ({
   usePanelStore: () => ({
     panels: {
       furnitureLibrary: {
@@ -25,11 +27,11 @@ jest.mock("../../../stores/panelStore", () => ({
         zIndex: 100,
       },
     },
-    hidePanel: jest.fn(),
-    toggleMinimize: jest.fn(),
-    bringToFront: jest.fn(),
-    updatePanelPosition: jest.fn(),
-    updatePanelSize: jest.fn(),
+    hidePanel: vi.fn(),
+    toggleMinimize: vi.fn(),
+    bringToFront: vi.fn(),
+    updatePanelPosition: vi.fn(),
+    updatePanelSize: vi.fn(),
   }),
   PANEL_CONFIGS: {
     furnitureLibrary: {
@@ -47,7 +49,7 @@ jest.mock("../../../stores/panelStore", () => ({
 }));
 
 // Mock react-rnd
-jest.mock("react-rnd", () => ({
+vi.mock("react-rnd", () => ({
   Rnd: ({ children, ...props }: any) => (
     <div data-testid="rnd-container" {...props}>
       {children}

@@ -162,11 +162,12 @@ const PRESET_COLOR_PALETTES: ColorPalette[] = [
 ];
 
 export const MaterialPalettePanel: React.FC = () => {
+
+  // Controlled state for main tab (materials/colors/lighting)
+  const [mainTab, setMainTab] = useState<string>("materials");
   const [selectedCategory, setSelectedCategory] = useState("walls");
   const [customBaseColor, setCustomBaseColor] = useState("#3B82F6");
-  const [generatedPalettes, setGeneratedPalettes] = useState<ColorPalette[]>(
-    []
-  );
+  const [generatedPalettes, setGeneratedPalettes] = useState<ColorPalette[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { lighting, updateSceneLighting } = useFloorPlanStore();
@@ -241,14 +242,15 @@ export const MaterialPalettePanel: React.FC = () => {
 
   return (
     <FloatingPanel panelId="materialPalette">
-      <Tabs defaultValue="materials" className="w-full">
+      <Tabs value={mainTab} onValueChange={setMainTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="materials">Materials</TabsTrigger>
-          <TabsTrigger value="colors">Colors</TabsTrigger>
-          <TabsTrigger value="lighting">Lighting</TabsTrigger>
+          <TabsTrigger value="materials" data-testid="material-panel-tab-materials">Materials</TabsTrigger>
+          <TabsTrigger value="colors" data-testid="material-panel-tab-colors">Colors</TabsTrigger>
+          <TabsTrigger value="lighting" data-testid="material-panel-tab-lighting">Lighting</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="materials" className="space-y-4">
+        <TabsContent value="materials" className="space-y-4" forceMount>
+          {/* Controlled Tabs for material categories - always render all TabsContent, only show active */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
             <TabsList className="grid w-full grid-cols-3">
               {MATERIAL_CATEGORIES.map((category) => (
@@ -256,124 +258,129 @@ export const MaterialPalettePanel: React.FC = () => {
                   key={category.id}
                   value={category.id}
                   className="text-xs"
+                  data-testid={`material-panel-category-${category.id}`}
                 >
                   {category.label}
                 </TabsTrigger>
               ))}
             </TabsList>
-
-            <ScrollArea className="h-[350px] mt-4">
-              <div className="grid grid-cols-2 gap-2">
-                {MATERIALS[selectedCategory as keyof typeof MATERIALS]?.map(
-                  (material) => (
-                    <Tooltip key={material.id}>
-                      <TooltipTrigger asChild>
-                        <Card
-                          className="cursor-move hover:shadow-md transition-all duration-200 hover:scale-105 group"
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, material)}
-                        >
-                          <CardContent className="p-3">
-                            <div
-                              className="w-full h-12 rounded mb-2 relative overflow-hidden border border-border/20"
-                              style={{ backgroundColor: material.color }}
+            {MATERIAL_CATEGORIES.map((category) => (
+              <TabsContent key={category.id} value={category.id} forceMount>
+                <ScrollArea className="h-[350px] mt-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    {MATERIALS[category.id as keyof typeof MATERIALS]?.map(
+                      (material) => (
+                        <Tooltip key={material.id}>
+                          <TooltipTrigger asChild>
+                            <Card
+                              className="cursor-move hover:shadow-md transition-all duration-200 hover:scale-105 group"
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, material)}
+                              data-testid={`material-texture-${material.name.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9-]/g, "").toLowerCase()}`}
                             >
-                              {/* Texture pattern overlay */}
-                              <div className="absolute inset-0 opacity-20">
-                                {material.texture === "brick" && (
-                                  <div
-                                    className="w-full h-full bg-gradient-to-br from-transparent via-black/10 to-transparent"
-                                    style={{
-                                      backgroundImage: `repeating-linear-gradient(
-                                           0deg,
-                                           transparent,
-                                           transparent 3px,
-                                           rgba(0,0,0,0.1) 3px,
-                                           rgba(0,0,0,0.1) 4px
-                                         ),
-                                         repeating-linear-gradient(
-                                           90deg,
-                                           transparent,
-                                           transparent 8px,
-                                           rgba(0,0,0,0.1) 8px,
-                                           rgba(0,0,0,0.1) 9px
-                                         )`,
-                                    }}
-                                  />
-                                )}
-                                {material.texture === "wood" && (
-                                  <div
-                                    className="w-full h-full bg-gradient-to-r from-transparent via-black/5 to-transparent"
-                                    style={{
-                                      backgroundImage: `repeating-linear-gradient(
-                                           90deg,
-                                           transparent,
-                                           transparent 2px,
-                                           rgba(0,0,0,0.05) 2px,
-                                           rgba(0,0,0,0.05) 3px
-                                         )`,
-                                    }}
-                                  />
-                                )}
-                                {material.texture === "tile" && (
-                                  <div
-                                    className="w-full h-full"
-                                    style={{
-                                      backgroundImage: `repeating-linear-gradient(
-                                           0deg,
-                                           rgba(0,0,0,0.1),
-                                           rgba(0,0,0,0.1) 1px,
-                                           transparent 1px,
-                                           transparent 6px
-                                         ),
-                                         repeating-linear-gradient(
-                                           90deg,
-                                           rgba(0,0,0,0.1),
-                                           rgba(0,0,0,0.1) 1px,
-                                           transparent 1px,
-                                           transparent 6px
-                                         )`,
-                                    }}
-                                  />
-                                )}
+                              <CardContent className="p-3">
+                                <div
+                                  className="w-full h-12 rounded mb-2 relative overflow-hidden border border-border/20"
+                                  style={{ backgroundColor: material.color }}
+                                >
+                                  {/* Texture pattern overlay */}
+                                  <div className="absolute inset-0 opacity-20">
+                                    {material.texture === "brick" && (
+                                      <div
+                                        className="w-full h-full bg-gradient-to-br from-transparent via-black/10 to-transparent"
+                                        style={{
+                                          backgroundImage: `repeating-linear-gradient(
+                                               0deg,
+                                               transparent,
+                                               transparent 3px,
+                                               rgba(0,0,0,0.1) 3px,
+                                               rgba(0,0,0,0.1) 4px
+                                             ),
+                                             repeating-linear-gradient(
+                                               90deg,
+                                               transparent,
+                                               transparent 8px,
+                                               rgba(0,0,0,0.1) 8px,
+                                               rgba(0,0,0,0.1) 9px
+                                             )`,
+                                        }}
+                                      />
+                                    )}
+                                    {material.texture === "wood" && (
+                                      <div
+                                        className="w-full h-full bg-gradient-to-r from-transparent via-black/5 to-transparent"
+                                        style={{
+                                          backgroundImage: `repeating-linear-gradient(
+                                               90deg,
+                                               transparent,
+                                               transparent 2px,
+                                               rgba(0,0,0,0.05) 2px,
+                                               rgba(0,0,0,0.05) 3px
+                                             )`,
+                                        }}
+                                      />
+                                    )}
+                                    {material.texture === "tile" && (
+                                      <div
+                                        className="w-full h-full"
+                                        style={{
+                                          backgroundImage: `repeating-linear-gradient(
+                                               0deg,
+                                               rgba(0,0,0,0.1),
+                                               rgba(0,0,0,0.1) 1px,
+                                               transparent 1px,
+                                               transparent 6px
+                                             ),
+                                             repeating-linear-gradient(
+                                               90deg,
+                                               rgba(0,0,0,0.1),
+                                               rgba(0,0,0,0.1) 1px,
+                                               transparent 1px,
+                                               transparent 6px
+                                             )`,
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover:from-white/20" />
+                                </div>
+                                <div className="text-xs font-medium truncate">
+                                  {material.name}
+                                </div>
+                                <div className="text-xs text-muted-foreground capitalize flex items-center gap-1">
+                                  <span>{material.texture}</span>
+                                  <span className="text-xs">•</span>
+                                  <span>{material.color}</span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </TooltipTrigger>
+                          <TooltipContent side="left">
+                            <div className="text-xs">
+                              <div className="font-medium">{material.name}</div>
+                              <div className="text-muted-foreground">
+                                {material.texture} texture
                               </div>
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover:from-white/20" />
+                              <div className="text-muted-foreground">
+                                Drag to apply to selected elements
+                              </div>
                             </div>
-                            <div className="text-xs font-medium truncate">
-                              {material.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground capitalize flex items-center gap-1">
-                              <span>{material.texture}</span>
-                              <span className="text-xs">•</span>
-                              <span>{material.color}</span>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TooltipTrigger>
-                      <TooltipContent side="left">
-                        <div className="text-xs">
-                          <div className="font-medium">{material.name}</div>
-                          <div className="text-muted-foreground">
-                            {material.texture} texture
-                          </div>
-                          <div className="text-muted-foreground">
-                            Drag to apply to selected elements
-                          </div>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  )
-                )}
-              </div>
-            </ScrollArea>
+                          </TooltipContent>
+                        </Tooltip>
+                      )
+                    )}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            ))}
           </Tabs>
         </TabsContent>
 
-        <TabsContent value="colors" className="space-y-4">
+        <TabsContent value="colors" className="space-y-4" forceMount>
           {/* Smart Palette Generator */}
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2">
+              <CardTitle className="text-sm flex items-center gap-2" data-testid="smart-palette-generator-title">
                 <Wand2 className="h-4 w-4" />
                 Smart Palette Generator
               </CardTitle>
@@ -381,15 +388,18 @@ export const MaterialPalettePanel: React.FC = () => {
             <CardContent className="space-y-3">
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <Label className="text-xs">Base Color</Label>
+                  <Label className="text-xs" htmlFor="base-color-input" data-testid="base-color-label">Base Color</Label>
                   <div className="flex gap-2 mt-1">
                     <Input
+                      id="base-color-input"
                       type="color"
                       value={customBaseColor}
                       onChange={(e) => setCustomBaseColor(e.target.value)}
                       className="w-12 h-8 p-1 border rounded"
+                      data-testid="base-color-input"
                     />
                     <Input
+                      id="base-color-text"
                       type="text"
                       value={customBaseColor}
                       onChange={(e) => setCustomBaseColor(e.target.value)}
@@ -425,6 +435,13 @@ export const MaterialPalettePanel: React.FC = () => {
                   <Card
                     key={palette.id}
                     className="transition-shadow hover:shadow-md"
+                    data-testid={
+                      generatedPalettes.includes(palette)
+                        ? `generated-palette-title`
+                        : palette.id
+                          ? `preset-palette-${palette.id}`
+                          : undefined
+                    }
                   >
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
@@ -492,21 +509,22 @@ export const MaterialPalettePanel: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="lighting" className="space-y-4">
+        <TabsContent value="lighting" className="space-y-4" forceMount>
           <div>
-            <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+            <h4 className="text-sm font-medium mb-3 flex items-center gap-2" data-testid="scene-lighting-controls-title">
               <Lightbulb className="h-4 w-4" />
               Scene Lighting Controls
             </h4>
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label className="text-sm">Main Light Intensity</Label>
+                  <Label className="text-sm" htmlFor="main-light-slider" data-testid="main-light-intensity-label">Main Light Intensity</Label>
                   <span className="text-xs text-muted-foreground">
                     {lightingSettings.mainLight.toFixed(1)}
                   </span>
                 </div>
                 <Slider
+                  id="main-light-slider"
                   value={[lightingSettings.mainLight]}
                   onValueChange={([value]) => {
                     const newSettings = {
@@ -519,17 +537,20 @@ export const MaterialPalettePanel: React.FC = () => {
                   max={2}
                   step={0.1}
                   className="mt-2"
+                  role="slider"
+                  aria-label="Main Light Intensity"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label className="text-sm">Ambient Light</Label>
+                  <Label className="text-sm" htmlFor="ambient-light-slider" data-testid="ambient-light-label">Ambient Light</Label>
                   <span className="text-xs text-muted-foreground">
                     {lightingSettings.ambientLight.toFixed(1)}
                   </span>
                 </div>
                 <Slider
+                  id="ambient-light-slider"
                   value={[lightingSettings.ambientLight]}
                   onValueChange={([value]) => {
                     const newSettings = {
@@ -547,12 +568,13 @@ export const MaterialPalettePanel: React.FC = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label className="text-sm">Color Temperature</Label>
+                  <Label className="text-sm" htmlFor="color-temperature-slider" data-testid="color-temperature-label">Color Temperature</Label>
                   <span className="text-xs text-muted-foreground">
                     {lightingSettings.temperature}K
                   </span>
                 </div>
                 <Slider
+                  id="color-temperature-slider"
                   value={[lightingSettings.temperature]}
                   onValueChange={([value]) => {
                     const newSettings = {
@@ -577,6 +599,7 @@ export const MaterialPalettePanel: React.FC = () => {
                 <Label className="text-sm mb-3 block">
                   Time of Day Ambiance
                 </Label>
+
                 <div className="grid grid-cols-2 gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -592,6 +615,7 @@ export const MaterialPalettePanel: React.FC = () => {
                           handleLightingChange(settings);
                         }}
                         className="flex items-center gap-2"
+                        data-testid="time-preset-night"
                       >
                         <Moon className="h-4 w-4" />
                         Night
@@ -616,6 +640,7 @@ export const MaterialPalettePanel: React.FC = () => {
                           handleLightingChange(settings);
                         }}
                         className="flex items-center gap-2"
+                        data-testid="time-preset-dawn"
                       >
                         <Sunrise className="h-4 w-4" />
                         Dawn
@@ -640,6 +665,7 @@ export const MaterialPalettePanel: React.FC = () => {
                           handleLightingChange(settings);
                         }}
                         className="flex items-center gap-2"
+                        data-testid="time-preset-midday"
                       >
                         <Sun className="h-4 w-4" />
                         Midday
@@ -664,6 +690,7 @@ export const MaterialPalettePanel: React.FC = () => {
                           handleLightingChange(settings);
                         }}
                         className="flex items-center gap-2"
+                        data-testid="time-preset-sunset"
                       >
                         <Sunset className="h-4 w-4" />
                         Sunset
@@ -740,17 +767,17 @@ export const MaterialPalettePanel: React.FC = () => {
 
       {/* Instructions */}
       <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg space-y-2 mt-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" data-testid="material-panel-instruction-select-elements">
           <Palette className="h-3 w-3" />
           <span>
             Select elements first, then drag materials/colors to apply
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" data-testid="material-panel-instruction-smart-palette">
           <Wand2 className="h-3 w-3" />
           <span>Use smart palette generator for harmonious color schemes</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" data-testid="material-panel-instruction-lighting-changes">
           <Lightbulb className="h-3 w-3" />
           <span>Lighting changes reflect in 3D view instantly</span>
         </div>

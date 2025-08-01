@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Rnd } from "react-rnd";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,20 +20,49 @@ import {
   Upload,
   Share2,
   Share,
-  Eye,
-  EyeOff,
+  // Eye,
+  // EyeOff,
   Ruler,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge.tsx";
+import { Button } from "./button";
+// import { Badge } from "@/components/ui/badge.tsx";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "./tooltip";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 import { PanelErrorBoundary } from "./panel-error-boundary.tsx";
-import { usePanelPerformance } from "../../hooks/usePanelPerformance";
+
+interface LegacyFloatingPanelProps {
+  title: string;
+  defaultPosition?: { x: number; y: number };
+  defaultSize?: { width: number; height: number };
+  minWidth?: number;
+  minHeight?: number;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onToggle?: (collapsed: boolean) => void;
+  className?: string;
+  children: React.ReactNode;
+  resizable?: boolean;
+  collapsible?: boolean;
+}
+
+interface LegacyFloatingPanelProps {
+  title: string;
+  defaultPosition?: { x: number; y: number };
+  defaultSize?: { width: number; height: number };
+  minWidth?: number;
+  minHeight?: number;
+  isOpen?: boolean;
+  onClose?: () => void;
+  onToggle?: (collapsed: boolean) => void;
+  className?: string;
+  children: React.ReactNode;
+  resizable?: boolean;
+  collapsible?: boolean;
+}
 
 interface FloatingPanelProps {
   panelId: string;
@@ -53,14 +82,14 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
     bringToFront,
     updatePanelPosition,
     updatePanelSize,
-    snapToEdges,
-    magneticBoundaries,
-    snapThreshold,
-    panelAnimations,
-    snapPanelToEdges,
+    // snapToEdges,
+    // magneticBoundaries,
+    // snapThreshold,
+    // panelAnimations,
+    // snapPanelToEdges,
   } = usePanelStore();
 
-  const { measurePanelRender } = usePanelPerformance();
+  // const { measurePanelRender } = usePanelPerformance();
   const panelState = panels[panelId];
   const panelConfig = PANEL_CONFIGS[panelId];
 
@@ -80,32 +109,7 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
     bringToFront(panelId);
   };
 
-  const handleDragStop = (e: React.DragEvent, d: { x: number; y: number }) => {
-    let finalPosition = { x: d.x, y: d.y };
-    
-    // Apply magnetic boundaries if enabled
-    if (magneticBoundaries && snapToEdges) {
-      const viewport = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
-
-      // Snap to edges
-      if (Math.abs(finalPosition.x) < snapThreshold) {
-        finalPosition.x = 0;
-      } else if (Math.abs(finalPosition.x + panelState.size.width - viewport.width) < snapThreshold) {
-        finalPosition.x = viewport.width - panelState.size.width;
-      }
-
-      if (Math.abs(finalPosition.y) < snapThreshold) {
-        finalPosition.y = 0;
-      } else if (Math.abs(finalPosition.y + panelState.size.height - viewport.height) < snapThreshold) {
-        finalPosition.y = viewport.height - panelState.size.height;
-      }
-    }
-
-    updatePanelPosition(panelId, finalPosition);
-  };
+  // Removed unused handleDragStop
 
   // Handle window resize to ensure the panel stays within viewport
   useEffect(() => {
@@ -147,11 +151,11 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
       minHeight={panelState.isMinimized ? 40 : panelConfig.minSize.height}
       maxWidth={panelConfig.maxSize?.width}
       maxHeight={panelConfig.maxSize?.height}
-      onDragStop={(_e: React.DragEvent, d: { x: number; y: number }) => {
+      onDragStop={(_e: any, d: { x: number; y: number }) => {
         updatePanelPosition(panelId, { x: d.x, y: d.y });
       }}
       onResizeStop={(
-        _e: React.SyntheticEvent,
+        _e: any,
         _direction: string,
         ref: HTMLElement,
         _delta: { width: number; height: number },
@@ -188,6 +192,7 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
             <button
               onClick={handleToggleMinimize}
               className="p-1 rounded-md hover:bg-muted transition-colors"
+              title={panelState.isMinimized ? "Maximize Panel" : "Minimize Panel"}
             >
               {panelState.isMinimized ? (
                 <Maximize2 className="h-4 w-4" />
@@ -201,6 +206,7 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
             <button
               onClick={handleClose}
               className="p-1 rounded-md hover:bg-muted transition-colors ml-1"
+              title="Close Panel"
             >
               <X className="h-4 w-4" />
             </button>
@@ -211,8 +217,7 @@ export const FloatingPanel: React.FC<FloatingPanelProps> = ({
       {/* Content */}
       {!panelState.isMinimized && (
         <div
-          className="p-3 overflow-auto"
-          style={{ height: "calc(100% - 40px)" }}
+          className="p-3 overflow-auto panel-content"
         >
           <PanelErrorBoundary panelId={panelId}>
             {children}
@@ -290,11 +295,11 @@ export const LegacyFloatingPanel: React.FC<LegacyFloatingPanelProps> = ({
       minHeight={collapsed ? 40 : minHeight}
       position={{ x: position.x, y: position.y }}
       size={{ width: size.width, height: collapsed ? 40 : size.height }}
-      onDragStop={(_e: React.DragEvent, d: { x: number; y: number }) => {
+      onDragStop={(_e: any, d: { x: number; y: number }) => {
         setPosition({ x: d.x, y: d.y });
       }}
       onResizeStop={(
-        _e: React.SyntheticEvent,
+        _e: any,
         _direction: string,
         ref: HTMLElement,
         _delta: { width: number; height: number },
@@ -341,6 +346,7 @@ export const LegacyFloatingPanel: React.FC<LegacyFloatingPanelProps> = ({
             <button
               onClick={onClose}
               className="p-1 rounded-md hover:bg-gray-200 transition-colors ml-1"
+              title="Close Panel"
             >
               <X className="h-4 w-4" />
             </button>
@@ -351,8 +357,7 @@ export const LegacyFloatingPanel: React.FC<LegacyFloatingPanelProps> = ({
       {/* Content */}
       {!collapsed && (
         <div
-          className="p-3 overflow-auto"
-          style={{ height: "calc(100% - 40px)" }}
+          className="p-3 overflow-auto panel-content"
         >
           {children}
         </div>
@@ -374,43 +379,43 @@ export const CollapsibleSidebar: React.FC<{
   defaultCollapsed = false,
   className,
 }) => {
-  const [collapsed, setCollapsed] = useState(defaultCollapsed);
+    const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
-  return (
-    <div
-      className={cn(
-        "h-full bg-white border-gray-200 transition-all duration-300 flex flex-col",
-        side === "left" ? "border-r" : "border-l",
-        collapsed ? "w-10" : `w-[${width}px]`,
-        className
-      )}
-    >
-      <button
+    return (
+      <div
         className={cn(
-          "p-2 bg-gray-50 border-gray-200 hover:bg-gray-100 transition-colors",
-          side === "left" ? "border-r border-b" : "border-l border-b"
+          "h-full bg-white border-gray-200 transition-all duration-300 flex flex-col",
+          side === "left" ? "border-r" : "border-l",
+          collapsed ? "w-10" : `w-[${width}px]`,
+          className
         )}
-        onClick={() => setCollapsed(!collapsed)}
       >
-        {side === "left" ? (
-          collapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
+        <button
+          className={cn(
+            "p-2 bg-gray-50 border-gray-200 hover:bg-gray-100 transition-colors",
+            side === "left" ? "border-r border-b" : "border-l border-b"
+          )}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {side === "left" ? (
+            collapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )
+          ) : collapsed ? (
             <ChevronLeft className="w-4 h-4" />
-          )
-        ) : collapsed ? (
-          <ChevronLeft className="w-4 h-4" />
-        ) : (
-          <ChevronRight className="w-4 h-4" />
-        )}
-      </button>
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+        </button>
 
-      <div className={cn("flex-1 overflow-hidden", collapsed ? "hidden" : "")}>
-        {children}
+        <div className={cn("flex-1 overflow-hidden", collapsed ? "hidden" : "")}>
+          {children}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 // Icon mapping for panels
 const PANEL_ICONS = {

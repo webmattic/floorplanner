@@ -84,6 +84,17 @@ export interface FloorPlanData {
 }
 
 export interface FloorPlanStore {
+  // Undo/redo stacks for rooms
+  _undoStack: Room[][];
+  _redoStack: Room[][];
+  undo: () => void;
+  redo: () => void;
+
+  // Auto-save state getter
+  getAutoSaveState: () => string[];
+
+  // Error setter
+  setError: (err: string) => void;
   // Current tool selection
   currentTool: string;
 
@@ -176,7 +187,7 @@ export interface FloorPlanStore {
   updateWall: (id: string, updates: Partial<Wall>) => void;
   removeWall: (id: string) => void;
 
-  addRoom: (room: Omit<Room, "id">) => void;
+  addRoom: (room: Room) => void;
   updateRoom: (id: string, updates: Partial<Room>) => void;
   removeRoom: (id: string) => void;
 
@@ -342,22 +353,77 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
       walls: state.walls.filter((wall) => wall.id !== id),
     })),
 
-  addRoom: (room: Omit<Room, "id">) =>
-    set((state) => ({
-      rooms: [...state.rooms, { ...room, id: `room_${Date.now()}` }],
-    })),
+  addRoom: (room: Room) => {
+    set((state) => {
+      // For undo/redo
+      const prevRooms = [...state.rooms];
+      const newRooms = [...state.rooms, room];
+      return {
+        rooms: newRooms,
+        _undoStack: [...(state._undoStack || []), prevRooms],
+        _redoStack: [],
+      };
+    });
+  },
 
-  updateRoom: (id: string, updates: Partial<Room>) =>
-    set((state) => ({
-      rooms: state.rooms.map((room) =>
+  updateRoom: (id: string, updates: Partial<Room>) => {
+    set((state) => {
+      const prevRooms = [...state.rooms];
+      const newRooms = state.rooms.map((room) =>
         room.id === id ? { ...room, ...updates } : room
-      ),
-    })),
+      );
+      return {
+        rooms: newRooms,
+        _undoStack: [...(state._undoStack || []), prevRooms],
+        _redoStack: [],
+      };
+    });
+  },
 
-  removeRoom: (id: string) =>
-    set((state) => ({
-      rooms: state.rooms.filter((room) => room.id !== id),
-    })),
+  removeRoom: (id: string) => {
+    set((state) => {
+      const prevRooms = [...state.rooms];
+      const newRooms = state.rooms.filter((room) => room.id !== id);
+      return {
+        rooms: newRooms,
+        _undoStack: [...(state._undoStack || []), prevRooms],
+        _redoStack: [],
+      };
+    });
+  },
+  // Undo/redo stacks
+  _undoStack: [],
+  _redoStack: [],
+
+  undo: () => {
+    set((state) => {
+      if (!state._undoStack || state._undoStack.length === 0) return {};
+      const prevRooms = state._undoStack[state._undoStack.length - 1];
+      const newUndoStack = state._undoStack.slice(0, -1);
+      return {
+        rooms: prevRooms,
+        _undoStack: newUndoStack,
+        _redoStack: [...(state._redoStack || []), state.rooms],
+      };
+    });
+  },
+  redo: () => {
+    set((state) => {
+      if (!state._redoStack || state._redoStack.length === 0) return {};
+      const nextRooms = state._redoStack[state._redoStack.length - 1];
+      const newRedoStack = state._redoStack.slice(0, -1);
+      return {
+        rooms: nextRooms,
+        _redoStack: newRedoStack,
+        _undoStack: [...(state._undoStack || []), state.rooms],
+      };
+    });
+  },
+  getAutoSaveState: () => {
+    const state = get();
+    return state.rooms.map((room) => room.id);
+  },
+  setError: (err: string) => set({ error: err }),
 
   addFurniture: (item: Omit<Furniture, "id">) =>
     set((state) => ({
@@ -407,7 +473,7 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
     set((state) => ({ clearanceDetection: !state.clearanceDetection })),
 
   getClearanceIssues: (): ClearanceIssue[] => {
-    const { clearanceDetection, walls, furniture, rooms } = get();
+    const { clearanceDetection, walls, furniture } = get();
     if (!clearanceDetection) return [];
 
     const issues: ClearanceIssue[] = [];
@@ -430,12 +496,10 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
             elementId: item.id,
             description:
               clearanceResult.type === "overlap"
-                ? `${item.label || "Furniture"} overlaps with ${
-                    otherItem.label || "furniture"
-                  }`
-                : `Insufficient clearance between ${
-                    item.label || "furniture"
-                  } items (${clearanceResult.distance.toFixed(1)}px)`,
+                ? `${item.label || "Furniture"} overlaps with ${otherItem.label || "furniture"
+                }`
+                : `Insufficient clearance between ${item.label || "furniture"
+                } items (${clearanceResult.distance.toFixed(1)}px)`,
             severity: clearanceResult.type === "overlap" ? "error" : "warning",
           });
         }
@@ -459,9 +523,8 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
               id: `wall_furniture_clearance_${item.id}_${wall.id}`,
               elementType: "furniture",
               elementId: item.id,
-              description: `${
-                item.label || "Furniture"
-              } may be too close to wall`,
+              description: `${item.label || "Furniture"
+                } may be too close to wall`,
               severity: "warning",
             });
           }
@@ -471,8 +534,7 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
     // Check for doors and door swing clearance
     const doors = furniture.filter(
-      (item) =>
-        item.label?.toLowerCase().includes("door") || item.type === "door"
+      (item) => item.label?.toLowerCase().includes("door")
     );
 
     doors.forEach((door) => {
