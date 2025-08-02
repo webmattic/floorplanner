@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MaterialPalettePanel } from "../MaterialPalettePanel";
@@ -60,19 +60,19 @@ vi.mock("react-rnd", () => ({
 
 // Mock color theory utilities
 vi.mock("../../../utils/colorTheory", () => ({
-  generateSmartPalette: vi.fn((baseColor, type) => {
+  generateSmartPalette: vi.fn((_baseColor, type) => {
     const paletteTypes = [
       "monochromatic",
       "analogous",
       "complementary",
       "triadic",
-      "split-complementary"
+      "split-complementary",
     ];
 
     return {
       id: `${type}-test`,
       name: `Test ${type}`,
-      colors: paletteTypes.map(t => `#${t.slice(0, 6).padEnd(6, '0')}`),
+      colors: paletteTypes.map((t) => `#${t.slice(0, 6).padEnd(6, "0")}`),
       type,
       description: `Test ${type} palette`,
     };
@@ -101,8 +101,8 @@ vi.mock("../../../utils/colorTheory", () => ({
       colors: ["#E0F6FF", "#B3E5FC", "#81D4FA", "#4FC3F7", "#29B6F6"],
       type: "analogous",
       description: "Calming blues for peaceful environments",
-    }
-  ]
+    },
+  ],
 }));
 
 const renderWithProviders = (component: React.ReactElement) => {
@@ -114,9 +114,9 @@ describe("MaterialPalettePanel", () => {
     renderWithProviders(<MaterialPalettePanel />);
 
     await waitFor(() => {
-      expect(screen.getByRole('tab', { name: /materials/i })).toBeVisible();
-      expect(screen.getByRole('tab', { name: /colors/i })).toBeVisible();
-      expect(screen.getByRole('tab', { name: /lighting/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /materials/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /colors/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /lighting/i })).toBeVisible();
     });
   });
 
@@ -124,70 +124,84 @@ describe("MaterialPalettePanel", () => {
     renderWithProviders(<MaterialPalettePanel />);
 
     await waitFor(() => {
-      expect(screen.getByRole('tab', { name: /walls/i })).toBeVisible();
-      expect(screen.getByRole('tab', { name: /floors/i })).toBeVisible();
-      expect(screen.getByRole('tab', { name: /fabrics/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /walls/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /floors/i })).toBeVisible();
+      expect(screen.getByRole("tab", { name: /fabrics/i })).toBeVisible();
     });
   });
 
   it("displays smart palette generator", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /colors/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /colors/i }));
 
-    await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /smart palette generator/i })).toBeVisible();
-      expect(screen.getByLabelText(/base color/i)).toBeVisible();
-    }, { timeout: 2000 }); // Increased timeout
+    await waitFor(
+      () => {
+        expect(
+          screen.getByRole("heading", { name: /smart palette generator/i })
+        ).toBeVisible();
+        expect(screen.getByLabelText(/base color/i)).toBeVisible();
+      },
+      { timeout: 2000 }
+    ); // Increased timeout
   });
 
   it("displays lighting controls", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /lighting/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /lighting/i }));
 
     await waitFor(() => {
       expect(screen.getByTestId("scene-lighting-controls-title")).toBeVisible();
       expect(screen.getByTestId("main-light-intensity-label")).toBeVisible();
       expect(screen.getByTestId("ambient-light-label")).toBeVisible();
       expect(screen.getByTestId("color-temperature-label")).toBeVisible();
-      expect(screen.getByRole('slider', { name: /main light intensity/i })).toBeInTheDocument();
-      expect(screen.getByRole('slider', { name: /ambient light/i })).toBeInTheDocument();
-      expect(screen.getByRole('slider', { name: /color temperature/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("slider", { name: /main light intensity/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("slider", { name: /ambient light/i })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("slider", { name: /color temperature/i })
+      ).toBeInTheDocument();
     });
   });
 
   it("displays time of day presets", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /lighting/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /lighting/i }));
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /night/i })).toBeVisible();
-      expect(screen.getByRole('button', { name: /dawn/i })).toBeVisible();
-      expect(screen.getByRole('button', { name: /midday/i })).toBeVisible();
-      expect(screen.getByRole('button', { name: /sunset/i })).toBeVisible();
+      expect(screen.getByRole("button", { name: /night/i })).toBeVisible();
+      expect(screen.getByRole("button", { name: /dawn/i })).toBeVisible();
+      expect(screen.getByRole("button", { name: /midday/i })).toBeVisible();
+      expect(screen.getByRole("button", { name: /sunset/i })).toBeVisible();
     });
   });
 
   it("generates smart palettes when base color changes", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /colors/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /colors/i }));
 
     const colorInput = screen.getByLabelText(/base color/i);
     fireEvent.change(colorInput, { target: { value: "#FF0000" } });
 
-    await waitFor(() => {
-      const generatedPalettes = screen.getAllByText(/test .* palette/i);
-      expect(generatedPalettes.length).toBe(5); // 5 palette types
-    }, { timeout: 1000 }); // Increased timeout for async operation
+    await waitFor(
+      () => {
+        const generatedPalettes = screen.getAllByText(/test .* palette/i);
+        expect(generatedPalettes.length).toBe(5); // 5 palette types
+      },
+      { timeout: 1000 }
+    ); // Increased timeout for async operation
   });
 
   it("displays preset color palettes", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /colors/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /colors/i }));
 
     await waitFor(() => {
       expect(screen.getByText(/modern minimalist/i)).toBeVisible();
@@ -209,7 +223,7 @@ describe("MaterialPalettePanel", () => {
   it("switches material categories", async () => {
     renderWithProviders(<MaterialPalettePanel />);
 
-    fireEvent.click(screen.getByRole('tab', { name: /floors/i }));
+    fireEvent.click(screen.getByRole("tab", { name: /floors/i }));
 
     await waitFor(() => {
       expect(screen.getByTestId("material-texture-hardwood")).toBeVisible();
@@ -222,9 +236,15 @@ describe("MaterialPalettePanel", () => {
     renderWithProviders(<MaterialPalettePanel />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("material-panel-instruction-select-elements")).toBeVisible();
-      expect(screen.getByTestId("material-panel-instruction-smart-palette")).toBeVisible();
-      expect(screen.getByTestId("material-panel-instruction-lighting-changes")).toBeVisible();
+      expect(
+        screen.getByTestId("material-panel-instruction-select-elements")
+      ).toBeVisible();
+      expect(
+        screen.getByTestId("material-panel-instruction-smart-palette")
+      ).toBeVisible();
+      expect(
+        screen.getByTestId("material-panel-instruction-lighting-changes")
+      ).toBeVisible();
     });
   });
 });

@@ -49,7 +49,18 @@ interface CADLayer {
   display_name?: string;
   color: string;
   entity_count: number;
-  layer_type: "walls" | "doors" | "windows" | "furniture" | "dimensions" | "text" | "electrical" | "plumbing" | "hvac" | "structural" | "other";
+  layer_type:
+    | "walls"
+    | "doors"
+    | "windows"
+    | "furniture"
+    | "dimensions"
+    | "text"
+    | "electrical"
+    | "plumbing"
+    | "hvac"
+    | "structural"
+    | "other";
   is_visible: boolean;
   is_importable: boolean;
   import_priority: number;
@@ -60,7 +71,13 @@ interface ImportJob {
   original_filename: string;
   file_format: string;
   file_size_mb: number;
-  status: "uploading" | "processing" | "layer_review" | "importing" | "completed" | "failed";
+  status:
+    | "uploading"
+    | "processing"
+    | "layer_review"
+    | "importing"
+    | "completed"
+    | "failed";
   progress_percentage: number;
   error_message?: string;
   layers?: CADLayer[];
@@ -94,7 +111,11 @@ interface LayerType {
 
 // API service for CAD import
 const CADImportAPI = {
-  async uploadFile(file: File, floorplanId?: string, options: Partial<ImportSettings> = {}): Promise<ImportJob> {
+  async uploadFile(
+    file: File,
+    floorplanId?: string,
+    options: Partial<ImportSettings> = {}
+  ): Promise<ImportJob> {
     const formData = new FormData();
     formData.append("file", file);
     if (floorplanId) formData.append("floorplan_id", floorplanId);
@@ -128,7 +149,10 @@ const CADImportAPI = {
     return response.json();
   },
 
-  async updateLayers(jobId: string, layerUpdates: Array<{ id: string; [key: string]: any }>): Promise<any> {
+  async updateLayers(
+    jobId: string,
+    layerUpdates: Array<{ id: string; [key: string]: any }>
+  ): Promise<any> {
     const response = await fetch(
       `/floorplanner/api/cad/imports/${jobId}/update_layers/`,
       {
@@ -237,7 +261,9 @@ export const CadImportPanel: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"upload" | "processing" | "layers" | "results">("upload");
+  const [activeTab, setActiveTab] = useState<
+    "upload" | "processing" | "layers" | "results"
+  >("upload");
   const [templates, setTemplates] = useState<ImportTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [importSettings, setImportSettings] = useState<ImportSettings>({
@@ -245,12 +271,17 @@ export const CadImportPanel: React.FC = () => {
     targetUnits: "m",
     scaleFactor: 1.0,
   });
-  const [layerSettings, setLayerSettings] = useState<Record<string, {
-    isVisible: boolean;
-    isImportable: boolean;
-    layerType: string;
-    importPriority: number;
-  }>>({});
+  const [layerSettings, setLayerSettings] = useState<
+    Record<
+      string,
+      {
+        isVisible: boolean;
+        isImportable: boolean;
+        layerType: string;
+        importPriority: number;
+      }
+    >
+  >({});
   const [activeImports, setActiveImports] = useState<ImportJob[]>([]);
 
   // File format information
@@ -319,19 +350,55 @@ export const CadImportPanel: React.FC = () => {
 
   const loadTemplates = async () => {
     try {
+      // Skip API calls in mock mode
+      if (!apiConfig || apiConfig.baseUrl.includes("localhost:3001")) {
+        setTemplates([
+          {
+            id: 1,
+            name: "Residential Template",
+            description: "Standard home layout",
+          },
+          {
+            id: 2,
+            name: "Office Template",
+            description: "Commercial office space",
+          },
+        ]);
+        return;
+      }
+
       const data = await CADImportAPI.getTemplates();
       setTemplates(data.results || []);
     } catch (err) {
       console.error("Failed to load templates:", err);
+      setTemplates([
+        {
+          id: 1,
+          name: "Residential Template",
+          description: "Standard home layout",
+        },
+        {
+          id: 2,
+          name: "Office Template",
+          description: "Commercial office space",
+        },
+      ]);
     }
   };
 
   const loadActiveImports = async () => {
     try {
+      // Skip API calls in mock mode
+      if (!apiConfig || apiConfig.baseUrl.includes("localhost:3001")) {
+        setActiveImports([]);
+        return;
+      }
+
       const data = await CADImportAPI.getActiveImports();
       setActiveImports(data.active_imports || []);
     } catch (err) {
       console.error("Failed to load active imports:", err);
+      setActiveImports([]);
     }
   };
 
@@ -439,7 +506,10 @@ export const CadImportPanel: React.FC = () => {
     [handleFileUpload]
   );
 
-  const handleLayerUpdate = async (layerId: string, updates: Partial<typeof layerSettings[string]>) => {
+  const handleLayerUpdate = async (
+    layerId: string,
+    updates: Partial<(typeof layerSettings)[string]>
+  ) => {
     try {
       setLayerSettings((prev) => ({
         ...prev,
@@ -512,7 +582,9 @@ export const CadImportPanel: React.FC = () => {
       await CADImportAPI.applyTemplate(currentImport.id, selectedTemplate);
       await loadImportDetails(); // Refresh import details
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Template application failed");
+      setError(
+        err instanceof Error ? err.message : "Template application failed"
+      );
     }
   };
 
@@ -582,7 +654,10 @@ export const CadImportPanel: React.FC = () => {
               <Select
                 value={importSettings.sourceUnits}
                 onValueChange={(value) =>
-                  setImportSettings((prev) => ({ ...prev, sourceUnits: value as ImportSettings["sourceUnits"] }))
+                  setImportSettings((prev) => ({
+                    ...prev,
+                    sourceUnits: value as ImportSettings["sourceUnits"],
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -603,7 +678,10 @@ export const CadImportPanel: React.FC = () => {
               <Select
                 value={importSettings.targetUnits}
                 onValueChange={(value) =>
-                  setImportSettings((prev) => ({ ...prev, targetUnits: value as ImportSettings["targetUnits"] }))
+                  setImportSettings((prev) => ({
+                    ...prev,
+                    targetUnits: value as ImportSettings["targetUnits"],
+                  }))
                 }
               >
                 <SelectTrigger>
@@ -882,23 +960,24 @@ export const CadImportPanel: React.FC = () => {
               </div>
             </div>
 
-            {currentImport.import_summary.warnings && currentImport.import_summary.warnings.length > 0 && (
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Warnings</AlertTitle>
-                <AlertDescription>
-                  <ul className="list-disc list-inside">
-                    {currentImport.import_summary.warnings.map(
-                      (warning, index) => (
-                        <li key={index} className="text-sm">
-                          {warning}
-                        </li>
-                      )
-                    )}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
+            {currentImport.import_summary.warnings &&
+              currentImport.import_summary.warnings.length > 0 && (
+                <Alert>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Warnings</AlertTitle>
+                  <AlertDescription>
+                    <ul className="list-disc list-inside">
+                      {currentImport.import_summary.warnings.map(
+                        (warning, index) => (
+                          <li key={index} className="text-sm">
+                            {warning}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              )}
 
             <div className="flex space-x-2">
               <Button
@@ -922,7 +1001,11 @@ export const CadImportPanel: React.FC = () => {
       <div className="h-full flex flex-col">
         {/* Content */}
         <div className="flex-1 overflow-hidden">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as typeof activeTab)} className="h-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+            className="h-full"
+          >
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="upload">Upload</TabsTrigger>
               <TabsTrigger value="processing" disabled={!currentImport}>
@@ -938,7 +1021,9 @@ export const CadImportPanel: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger
                 value="results"
-                disabled={!currentImport || currentImport.status !== "completed"}
+                disabled={
+                  !currentImport || currentImport.status !== "completed"
+                }
               >
                 Results
               </TabsTrigger>
@@ -949,7 +1034,9 @@ export const CadImportPanel: React.FC = () => {
             </TabsContent>
 
             <TabsContent value="processing" className="h-full p-4">
-              <ScrollArea className="h-full">{renderProcessingTab()}</ScrollArea>
+              <ScrollArea className="h-full">
+                {renderProcessingTab()}
+              </ScrollArea>
             </TabsContent>
 
             <TabsContent value="layers" className="h-full p-4">

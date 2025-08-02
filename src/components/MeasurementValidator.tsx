@@ -27,7 +27,7 @@ const MeasurementValidator: React.FC<MeasurementValidatorProps> = ({
 
   useEffect(() => {
     // Recalculate measurements whenever elements change
-    const totalArea = calculateTotalArea();
+    const totalArea = useFloorPlanStore.getState().calculateTotalArea();
     const roomCount = rooms.length;
     const furnitureCount = furniture.length;
     const wallCount = walls.length;

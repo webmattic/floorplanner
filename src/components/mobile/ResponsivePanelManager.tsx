@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { usePanelStore } from "../../stores/panelStore";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface ResponsivePanelManagerProps {
   children: React.ReactNode;

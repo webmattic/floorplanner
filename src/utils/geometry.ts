@@ -3,28 +3,28 @@
 /**
  * Calculate distance between two points
  */
-export const calculateDistance = (x1, y1, x2, y2) => {
+export const calculateDistance = (x1: number, y1: number, x2: number, y2: number): number => {
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
 }
 
 /**
  * Convert pixels to meters based on grid scale
  */
-export const pixelsToMeters = (pixels, gridSize = 50) => {
+export const pixelsToMeters = (pixels: number, gridSize: number = 50): number => {
   return pixels / gridSize
 }
 
 /**
  * Convert meters to pixels based on grid scale
  */
-export const metersToPixels = (meters, gridSize = 50) => {
+export const metersToPixels = (meters: number, gridSize: number = 50): number => {
   return meters * gridSize
 }
 
 /**
  * Snap point to grid
  */
-export const snapToGrid = (x, y, gridSize = 50) => {
+export const snapToGrid = (x: number, y: number, gridSize: number = 50): { x: number; y: number } => {
   return {
     x: Math.round(x / gridSize) * gridSize,
     y: Math.round(y / gridSize) * gridSize
@@ -34,7 +34,7 @@ export const snapToGrid = (x, y, gridSize = 50) => {
 /**
  * Calculate wall length from points array
  */
-export const calculateWallLength = (points) => {
+export const calculateWallLength = (points: number[]): number => {
   if (points.length < 4) return 0
   
   let length = 0
@@ -50,21 +50,21 @@ export const calculateWallLength = (points) => {
 /**
  * Calculate room area
  */
-export const calculateRoomArea = (width, height) => {
+export const calculateRoomArea = (width: number, height: number): number => {
   return width * height
 }
 
 /**
  * Format measurement for display
  */
-export const formatMeasurement = (value, unit = 'm', precision = 2) => {
+export const formatMeasurement = (value: number, unit: string = 'm', precision: number = 2): string => {
   return `${value.toFixed(precision)} ${unit}`
 }
 
 /**
  * Check if point is inside rectangle
  */
-export const isPointInRect = (pointX, pointY, rectX, rectY, rectWidth, rectHeight) => {
+export const isPointInRect = (pointX: number, pointY: number, rectX: number, rectY: number, rectWidth: number, rectHeight: number): boolean => {
   return pointX >= rectX && 
          pointX <= rectX + rectWidth && 
          pointY >= rectY && 
@@ -74,8 +74,8 @@ export const isPointInRect = (pointX, pointY, rectX, rectY, rectWidth, rectHeigh
 /**
  * Get bounding box for a set of points
  */
-export const getBoundingBox = (points) => {
-  if (points.length < 2) return null
+export const getBoundingBox = (points: number[]): { minX: number; minY: number; maxX: number; maxY: number } => {
+  if (points.length < 2) return { minX: 0, minY: 0, maxX: 0, maxY: 0 }
   
   let minX = points[0]
   let maxX = points[0]
@@ -90,10 +90,10 @@ export const getBoundingBox = (points) => {
   }
   
   return {
-    x: minX,
-    y: minY,
-    width: maxX - minX,
-    height: maxY - minY
+    minX: minX,
+    minY: minY,
+    maxX: maxX,
+    maxY: maxY
   }
 }
 
@@ -107,7 +107,7 @@ export const generateId = (prefix = 'element') => {
 /**
  * Validate floor plan data
  */
-export const validateFloorPlan = (data) => {
+export const validateFloorPlan = (data: any): { isValid: boolean; errors: string[] } => {
   const errors = []
   
   if (!data.walls || !Array.isArray(data.walls)) {
@@ -123,14 +123,14 @@ export const validateFloorPlan = (data) => {
   }
   
   // Validate walls
-  data.walls?.forEach((wall, index) => {
+  data.walls?.forEach((wall: any, index: number) => {
     if (!wall.points || wall.points.length < 4) {
       errors.push(`Wall ${index} has invalid points`)
     }
   })
   
   // Validate rooms
-  data.rooms?.forEach((room, index) => {
+  data.rooms?.forEach((room: any, index: number) => {
     if (!room.x || !room.y || !room.width || !room.height) {
       errors.push(`Room ${index} is missing required dimensions`)
     }
@@ -145,7 +145,7 @@ export const validateFloorPlan = (data) => {
 /**
  * Export floor plan as SVG
  */
-export const exportAsSVG = (floorPlanData, options = {}) => {
+export const exportAsSVG = (floorPlanData: any, options: { width?: number; height?: number; scale?: number } = {}): string => {
   const { width = 800, height = 600, scale = 1 } = options
   
   let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`
@@ -154,7 +154,7 @@ export const exportAsSVG = (floorPlanData, options = {}) => {
   svg += `<rect width="100%" height="100%" fill="white"/>`
   
   // Add walls
-  floorPlanData.walls?.forEach(wall => {
+  floorPlanData.walls?.forEach((wall: any) => {
     if (wall.points && wall.points.length >= 4) {
       svg += `<polyline points="${wall.points.join(' ')}" 
                 stroke="${wall.color || '#374151'}" 
@@ -166,7 +166,7 @@ export const exportAsSVG = (floorPlanData, options = {}) => {
   })
   
   // Add rooms
-  floorPlanData.rooms?.forEach(room => {
+  floorPlanData.rooms?.forEach((room: any) => {
     svg += `<rect x="${room.x * scale}" 
                   y="${room.y * scale}" 
                   width="${room.width * scale}" 
@@ -185,7 +185,7 @@ export const exportAsSVG = (floorPlanData, options = {}) => {
   })
   
   // Add furniture
-  floorPlanData.furniture?.forEach(item => {
+  floorPlanData.furniture?.forEach((item: any) => {
     svg += `<rect x="${item.x * scale}" 
                   y="${item.y * scale}" 
                   width="${item.width * scale}" 
@@ -206,3 +206,149 @@ export const exportAsSVG = (floorPlanData, options = {}) => {
   svg += '</svg>'
   return svg
 }
+
+/**
+ * Check clearance between two objects
+ */
+export const checkClearance = (obj1: any, obj2: any, minClearance: number) => {
+  const distance = calculateDistance(
+    obj1.x + obj1.width / 2,
+    obj1.y + obj1.height / 2,
+    obj2.x + obj2.width / 2,
+    obj2.y + obj2.height / 2
+  );
+  
+  const requiredDistance = minClearance + (obj1.width + obj1.height + obj2.width + obj2.height) / 4;
+  
+  return {
+    hasIssue: distance < requiredDistance,
+    distance: distance,
+    type: distance < requiredDistance / 2 ? 'overlap' : 'insufficient'
+  };
+};
+
+/**
+ * Check door swing clearance
+ */
+export const checkDoorSwingClearance = (door: any, furniture: any[], walls: any[]) => {
+  const issues: any[] = [];
+  
+  // Simplified door swing check - in a real implementation this would be more complex
+  furniture.forEach(item => {
+    const distance = calculateDistance(door.x, door.y, item.x, item.y);
+    if (distance < 100) { // 100px door swing clearance
+      issues.push({
+        id: `door_swing_${door.id}_${item.id}`,
+        elementType: 'furniture',
+        elementId: item.id,
+        description: `${item.label || 'Furniture'} may block door swing`,
+        severity: 'warning'
+      });
+    }
+  });
+  
+  return issues;
+};
+
+/**
+ * Calculate walking clearance
+ */
+export const calculateWalkingClearance = (item: any, otherFurniture: any[]) => {
+  const issues: any[] = [];
+  
+  // Check if there's enough walking space around furniture
+  otherFurniture.forEach(other => {
+    const distance = calculateDistance(item.x, item.y, other.x, other.y);
+    if (distance < 80) { // 80px minimum walking clearance
+      issues.push({
+        id: `walking_clearance_${item.id}_${other.id}`,
+        elementType: 'furniture',
+        elementId: item.id,
+        description: `Insufficient walking space between furniture items`,
+        severity: 'warning'
+      });
+    }
+  });
+  
+  return issues;
+};
+
+/**
+ * Calculate automatic room measurements
+ */
+export const calculateAutomaticRoomMeasurements = (room: any, unit: string) => {
+  const area = calculateRoomArea(room.width, room.height);
+  const perimeter = 2 * (room.width + room.height);
+  
+  return {
+    area: area,
+    perimeter: perimeter,
+    width: room.width,
+    height: room.height,
+    unit: unit
+  };
+};
+
+/**
+ * Convert units
+ */
+export const convertUnit = (value: number, fromUnit: string, toUnit: string): number => {
+  // Simplified unit conversion - in a real app this would be more comprehensive
+  const pixelsPerMeter = 50; // Assuming 50 pixels = 1 meter
+  const pixelsPerFoot = 16.67; // Assuming 16.67 pixels = 1 foot
+  
+  let valueInPixels = value;
+  
+  // Convert from source unit to pixels
+  if (fromUnit === 'm') {
+    valueInPixels = value * pixelsPerMeter;
+  } else if (fromUnit === 'ft') {
+    valueInPixels = value * pixelsPerFoot;
+  }
+  
+  // Convert from pixels to target unit
+  if (toUnit === 'm') {
+    return valueInPixels / pixelsPerMeter;
+  } else if (toUnit === 'ft') {
+    return valueInPixels / pixelsPerFoot;
+  }
+  
+  return valueInPixels; // Return pixels if no conversion needed
+};
+
+/**
+ * Calculate real-time dimensions
+ */
+export const calculateRealTimeDimensions = (startPoint: any, currentPoint: any, unit: string) => {
+  const distance = calculateDistance(startPoint.x, startPoint.y, currentPoint.x, currentPoint.y);
+  const width = Math.abs(currentPoint.x - startPoint.x);
+  const height = Math.abs(currentPoint.y - startPoint.y);
+  
+  return {
+    distance: convertUnit(distance, 'px', unit),
+    width: convertUnit(width, 'px', unit),
+    height: convertUnit(height, 'px', unit),
+    unit: unit
+  };
+};
+
+/**
+ * Get measurement annotations
+ */
+export const getMeasurementAnnotations = (elements: any[], unit: string) => {
+  const annotations: any[] = [];
+  
+  elements.forEach(element => {
+    if (element.type === 'room') {
+      annotations.push({
+        id: `annotation_${element.id}`,
+        x: element.x + element.width / 2,
+        y: element.y + element.height / 2,
+        text: `${convertUnit(element.width, 'px', unit).toFixed(1)} × ${convertUnit(element.height, 'px', unit).toFixed(1)} ${unit}`,
+        type: 'dimension'
+      });
+    }
+  });
+  
+  return annotations;
+};

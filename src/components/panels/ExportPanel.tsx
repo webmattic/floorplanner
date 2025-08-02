@@ -17,12 +17,7 @@ import {
 } from "../ui/select";
 import { Progress } from "../ui/progress.tsx";
 import { Badge } from "../ui/badge.tsx";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../ui/tabs.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
 import {
   Dialog,
   DialogContent,
@@ -117,7 +112,9 @@ export const ExportPanel: React.FC = () => {
   const { currentFloorPlan, apiConfig } = useFloorPlanStore();
 
   // Export state
-  const [activeTab, setActiveTab] = useState<"image" | "video" | "pdf">("image");
+  const [activeTab, setActiveTab] = useState<"image" | "video" | "pdf">(
+    "image"
+  );
   const [exportSettings, setExportSettings] = useState<ExportSettings>({
     export_type: "image",
     quality: "standard",
@@ -134,7 +131,8 @@ export const ExportPanel: React.FC = () => {
   const [exportJobs, setExportJobs] = useState<ExportJob[]>([]);
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [presets, setPresets] = useState<ExportPreset[]>([]);
-  const [exportStatistics, setExportStatistics] = useState<ExportStatistics | null>(null);
+  const [exportStatistics, setExportStatistics] =
+    useState<ExportStatistics | null>(null);
 
   // UI state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -193,6 +191,12 @@ export const ExportPanel: React.FC = () => {
   const loadExportJobs = async () => {
     if (!apiConfig) return;
 
+    // Skip API calls in mock mode
+    if (apiConfig.baseUrl.includes("localhost:3001")) {
+      setExportJobs([]);
+      return;
+    }
+
     try {
       const response = await fetch(`${apiConfig.baseUrl}/exports/`, {
         headers: {
@@ -206,11 +210,21 @@ export const ExportPanel: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to load export jobs:", error);
+      setExportJobs([]);
     }
   };
 
   const loadPresets = async () => {
     if (!apiConfig) return;
+
+    // Skip API calls in mock mode
+    if (apiConfig.baseUrl.includes("localhost:3001")) {
+      setPresets([
+        { id: 1, name: "High Quality", format: "PNG", settings: {} },
+        { id: 2, name: "Web Optimized", format: "JPG", settings: {} },
+      ]);
+      return;
+    }
 
     try {
       const response = await fetch(`${apiConfig.baseUrl}/export-presets/`, {
@@ -358,7 +372,10 @@ export const ExportPanel: React.FC = () => {
     setSelectedPreset(preset.id);
   };
 
-  const updateSetting = <K extends keyof ExportSettings>(key: K, value: ExportSettings[K]) => {
+  const updateSetting = <K extends keyof ExportSettings>(
+    key: K,
+    value: ExportSettings[K]
+  ) => {
     setExportSettings((prev) => ({
       ...prev,
       [key]: value,
@@ -366,7 +383,9 @@ export const ExportPanel: React.FC = () => {
   };
 
   const getCsrfToken = (): string => {
-    const element = document.querySelector("[name=csrfmiddlewaretoken]") as HTMLInputElement;
+    const element = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ) as HTMLInputElement;
     return element?.value || "";
   };
 
@@ -402,10 +421,14 @@ export const ExportPanel: React.FC = () => {
     <FloatingPanel panelId="export">
       <div className="space-y-6">
         {/* Export Type Tabs */}
-        <Tabs value={activeTab} onValueChange={(value) => {
-          setActiveTab(value as "image" | "video" | "pdf");
-          updateSetting("export_type", value as "image" | "video" | "pdf");
-        }} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => {
+            setActiveTab(value as "image" | "video" | "pdf");
+            updateSetting("export_type", value as "image" | "video" | "pdf");
+          }}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="image" className="flex items-center gap-2">
               <FileImage className="h-4 w-4" />
@@ -436,7 +459,12 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="quality">Quality</Label>
                     <Select
                       value={exportSettings.quality}
-                      onValueChange={(value) => updateSetting("quality", value as ExportSettings["quality"])}
+                      onValueChange={(value) =>
+                        updateSetting(
+                          "quality",
+                          value as ExportSettings["quality"]
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -460,7 +488,12 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="resolution">Resolution</Label>
                     <Select
                       value={exportSettings.resolution}
-                      onValueChange={(value) => updateSetting("resolution", value as ExportSettings["resolution"])}
+                      onValueChange={(value) =>
+                        updateSetting(
+                          "resolution",
+                          value as ExportSettings["resolution"]
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -480,7 +513,12 @@ export const ExportPanel: React.FC = () => {
                   <Label htmlFor="format">Format</Label>
                   <Select
                     value={exportSettings.image_format}
-                    onValueChange={(value) => updateSetting("image_format", value as ExportSettings["image_format"])}
+                    onValueChange={(value) =>
+                      updateSetting(
+                        "image_format",
+                        value as ExportSettings["image_format"]
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -518,7 +556,12 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="quality">Quality</Label>
                     <Select
                       value={exportSettings.quality}
-                      onValueChange={(value) => updateSetting("quality", value as ExportSettings["quality"])}
+                      onValueChange={(value) =>
+                        updateSetting(
+                          "quality",
+                          value as ExportSettings["quality"]
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -537,7 +580,12 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="resolution">Resolution</Label>
                     <Select
                       value={exportSettings.resolution}
-                      onValueChange={(value) => updateSetting("resolution", value as ExportSettings["resolution"])}
+                      onValueChange={(value) =>
+                        updateSetting(
+                          "resolution",
+                          value as ExportSettings["resolution"]
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -559,7 +607,9 @@ export const ExportPanel: React.FC = () => {
                   </Label>
                   <Slider
                     value={[exportSettings.duration]}
-                    onValueChange={([value]) => updateSetting("duration", value)}
+                    onValueChange={([value]) =>
+                      updateSetting("duration", value)
+                    }
                     max={300}
                     min={10}
                     step={5}
@@ -589,7 +639,12 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="paper">Paper Size</Label>
                     <Select
                       value={exportSettings.paper_size}
-                      onValueChange={(value) => updateSetting("paper_size", value as ExportSettings["paper_size"])}
+                      onValueChange={(value) =>
+                        updateSetting(
+                          "paper_size",
+                          value as ExportSettings["paper_size"]
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -607,7 +662,9 @@ export const ExportPanel: React.FC = () => {
                     <Label htmlFor="scale">Scale</Label>
                     <Select
                       value={exportSettings.scale}
-                      onValueChange={(value) => updateSetting("scale", value as ExportSettings["scale"])}
+                      onValueChange={(value) =>
+                        updateSetting("scale", value as ExportSettings["scale"])
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -627,7 +684,10 @@ export const ExportPanel: React.FC = () => {
                       id="measurements"
                       checked={exportSettings.include_measurements}
                       onCheckedChange={(checked) =>
-                        updateSetting("include_measurements", checked as boolean)
+                        updateSetting(
+                          "include_measurements",
+                          checked as boolean
+                        )
                       }
                     />
                     <Label htmlFor="measurements">Include measurements</Label>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button";
 import {
   Menu,
   X,
@@ -9,7 +9,7 @@ import {
   Grid3X3,
   Settings,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -544,11 +544,14 @@ export const mobileUtils = {
   // Register service worker
   registerServiceWorker: async () => {
     // Skip service worker registration in development
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+    ) {
       console.log("Service Worker registration skipped in development");
       return;
     }
-    
+
     if ("serviceWorker" in navigator) {
       try {
         const registration = await navigator.serviceWorker.register(

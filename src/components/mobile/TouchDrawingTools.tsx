@@ -1,11 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator.tsx";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
   Move,
   Square,
@@ -22,7 +18,7 @@ import {
 } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 import { useDeviceDetection } from "./ResponsivePanelManager";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface TouchDrawingToolsProps {
   className?: string;

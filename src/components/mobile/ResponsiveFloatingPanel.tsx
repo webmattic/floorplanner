@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 import { X, Minimize2, Maximize2, Move } from "lucide-react";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 import { useDeviceDetection } from "./ResponsivePanelManager";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 interface ResponsiveFloatingPanelProps {
   panelId: string;

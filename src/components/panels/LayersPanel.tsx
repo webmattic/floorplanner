@@ -3,7 +3,7 @@ import { FloatingPanel } from "../ui/floating-panel.tsx";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label.tsx";
-import { Switch } from "../ui/switch";
+
 import {
   Dialog,
   DialogContent,
@@ -30,7 +30,6 @@ import {
   Trash2,
   GripVertical,
   Info,
-  Palette,
   Move,
   Square,
   Package,
@@ -357,7 +356,10 @@ export const LayersPanel: React.FC = () => {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="font-medium text-sm flex items-center gap-2" data-testid="layer-management-header">
+          <h3
+            className="font-medium text-sm flex items-center gap-2"
+            data-testid="layer-management-header"
+          >
             <Layers className="h-4 w-4" />
             Layer Management
           </h3>
@@ -367,7 +369,12 @@ export const LayersPanel: React.FC = () => {
             onOpenChange={setIsCreateDialogOpen}
           >
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="h-7" data-testid="add-layer-button">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7"
+                data-testid="add-layer-button"
+              >
                 <Plus className="h-3 w-3 mr-1" />
                 Add Layer
               </Button>
@@ -441,7 +448,9 @@ export const LayersPanel: React.FC = () => {
               return (
                 <Card
                   key={layer.id}
-                  className={`transition-all duration-200 ${isDragging ? "opacity-50 scale-95" : ""}
+                  className={`transition-all duration-200 ${
+                    isDragging ? "opacity-50 scale-95" : ""
+                  }
                     ${isDragOver ? "ring-2 ring-primary/50 bg-primary/5" : ""}`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, layer.id)}
@@ -453,7 +462,10 @@ export const LayersPanel: React.FC = () => {
                   <CardContent className="p-3">
                     <div className="flex items-center gap-3">
                       {/* Drag Handle */}
-                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab hover:text-foreground" data-testid="drag-handle" />
+                      <GripVertical
+                        className="h-4 w-4 text-muted-foreground cursor-grab hover:text-foreground"
+                        data-testid="drag-handle"
+                      />
 
                       {/* Layer Color & Icon */}
                       <div className="flex items-center gap-2">
@@ -467,7 +479,10 @@ export const LayersPanel: React.FC = () => {
                       {/* Layer Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm truncate" data-testid={`layer-name-${layer.id}`}>
+                          <span
+                            className="font-medium text-sm truncate"
+                            data-testid={`layer-name-${layer.id}`}
+                          >
                             {layer.name}
                           </span>
                           {layer.type === "default" && (
@@ -480,9 +495,13 @@ export const LayersPanel: React.FC = () => {
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground" data-testid={`layer-object-count-${layer.id}`}
-                          data-layer-id={layer.id}>
-                          {layer.objectCount} object{layer.objectCount !== 1 ? "s" : ""}
+                        <div
+                          className="text-xs text-muted-foreground"
+                          data-testid={`layer-object-count-${layer.id}`}
+                          data-layer-id={layer.id}
+                        >
+                          {layer.objectCount} object
+                          {layer.objectCount !== 1 ? "s" : ""}
                         </div>
                       </div>
 
@@ -585,7 +604,9 @@ export const LayersPanel: React.FC = () => {
           <div className="text-xs text-muted-foreground space-y-1">
             <div className="flex items-center justify-between">
               <span data-testid="total-layers-label">Total Layers:</span>
-              <span className="font-medium" data-testid="total-layers-value">{layers.length}</span>
+              <span className="font-medium" data-testid="total-layers-value">
+                {layers.length}
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span data-testid="visible-layers-label">Visible Layers:</span>

@@ -219,7 +219,7 @@ export const DrawingToolsPanel: React.FC = () => {
                 <div className="mt-3 space-y-2">
                   <Label className="text-xs">Wall Thickness</Label>
                   <Select
-                    value={wallThickness.toString()}
+                    value={(wallThickness || 8).toString()}
                     onValueChange={(value) => setWallThickness(Number(value))}
                   >
                     <SelectTrigger className="h-8">

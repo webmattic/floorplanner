@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Rnd } from "react-rnd";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import {
   Move,
   X,
@@ -23,13 +23,9 @@ import {
   Link,
   Unlink,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge.tsx";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Button } from "./button";
+import { Badge } from "./badge.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 
 // Magnetic snapping configuration

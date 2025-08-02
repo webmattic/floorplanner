@@ -95,6 +95,13 @@ export interface FloorPlanStore {
 
   // Error setter
   setError: (err: string) => void;
+
+  // Layer management (placeholder for future implementation)
+  layers?: any[];
+
+  // Revision history (placeholder for future implementation)
+  revisionHistory?: any[];
+  currentRevision?: any;
   // Current tool selection
   currentTool: string;
 
@@ -296,6 +303,13 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
   // 3D scene lighting
   lighting: { mainLight: 1, ambientLight: 0.5, temperature: 6500 },
+
+  // Layer management (placeholder)
+  layers: [],
+
+  // Revision history (placeholder)
+  revisionHistory: [],
+  currentRevision: null,
 
   // Actions
   setCurrentTool: (tool: string) => set({ currentTool: tool }),

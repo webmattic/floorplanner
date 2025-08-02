@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { View3DPanel } from "../View3DPanel";
@@ -158,14 +158,17 @@ describe("View3DPanel", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Camera Presets/i)).toBeInTheDocument();
-      // Switch to camera tab before checking camera presets
-      const cameraTab = screen.getByText("Camera");
-      fireEvent.click(cameraTab);
-      await waitFor(() => {
-        ["default", "top", "front", "side", "isometric", "corner"].forEach((presetId) => {
-          expect(screen.getByTestId(`camera-preset-${presetId}`)).toBeInTheDocument();
-        });
-      });
+    });
+
+    // Check camera presets
+    await waitFor(() => {
+      ["default", "top", "front", "side", "isometric", "corner"].forEach(
+        (presetId) => {
+          expect(
+            screen.getByTestId(`camera-preset-${presetId}`)
+          ).toBeInTheDocument();
+        }
+      );
     });
   });
 
@@ -211,13 +214,8 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      // Switch to render tab before checking render quality and environment
-      const renderTab = screen.getByText("Render");
-      fireEvent.click(renderTab);
-      await waitFor(() => {
-        expect(screen.getByTestId("render-quality-label")).toBeInTheDocument();
-        expect(screen.getByTestId("environment-label")).toBeInTheDocument();
-      });
+      expect(screen.getByTestId("render-quality-label")).toBeInTheDocument();
+      expect(screen.getByTestId("environment-label")).toBeInTheDocument();
     });
   });
 
@@ -229,14 +227,9 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      // Switch to render tab before checking export/share
-      const renderTab = screen.getByText("Render");
-      fireEvent.click(renderTab);
-      await waitFor(() => {
-        expect(screen.getByTestId("export-share-label")).toBeInTheDocument();
-        expect(screen.getByTestId("export-button")).toBeInTheDocument();
-        expect(screen.getByTestId("share-button")).toBeInTheDocument();
-      });
+      expect(screen.getByTestId("export-share-label")).toBeInTheDocument();
+      expect(screen.getByTestId("export-button")).toBeInTheDocument();
+      expect(screen.getByTestId("share-button")).toBeInTheDocument();
     });
   });
 
@@ -270,15 +263,14 @@ describe("View3DPanel", () => {
     const cameraTab = screen.getByText("Camera");
     fireEvent.click(cameraTab);
 
+    // Switch to camera tab
+    const cameraTab = screen.getByText("Camera");
+    fireEvent.click(cameraTab);
+
     await waitFor(() => {
-      // Switch to camera tab before clicking camera preset
-      const cameraTab = screen.getByText("Camera");
-      fireEvent.click(cameraTab);
-      await waitFor(() => {
-        const topViewButton = screen.getByTestId("camera-preset-top");
-        fireEvent.click(topViewButton);
-        expect(mockFloorPlanStore.setCameraView).toHaveBeenCalledWith("top");
-      });
+      const topViewButton = screen.getByTestId("camera-preset-top");
+      fireEvent.click(topViewButton);
+      expect(mockFloorPlanStore.setCameraView).toHaveBeenCalledWith("top");
     });
   });
 
@@ -310,12 +302,10 @@ describe("View3DPanel", () => {
     fireEvent.click(renderTab);
 
     await waitFor(() => {
-      // Switch to render tab before checking real-time sync alert
+      // Switch to render tab
       const renderTab = screen.getByText("Render");
       fireEvent.click(renderTab);
-      await waitFor(() => {
-        expect(screen.getByTestId("realtime-sync-alert")).toBeInTheDocument();
-      });
+      expect(screen.getByTestId("realtime-sync-alert")).toBeInTheDocument();
     });
   });
 
@@ -387,13 +377,18 @@ describe("View3DPanel", () => {
     fireEvent.click(cameraTab);
 
     await waitFor(() => {
-      // Switch to camera tab before checking lighting values
+      // Switch to camera tab
       const cameraTab = screen.getByText("Camera");
       fireEvent.click(cameraTab);
+
       await waitFor(() => {
         expect(screen.getByTestId("main-light-value")).toHaveTextContent("1.0"); // Main light
-        expect(screen.getByTestId("ambient-light-value")).toHaveTextContent("0.5"); // Ambient light
-        expect(screen.getByTestId("temperature-value")).toHaveTextContent("6500K"); // Temperature
+        expect(screen.getByTestId("ambient-light-value")).toHaveTextContent(
+          "0.5"
+        ); // Ambient light
+        expect(screen.getByTestId("temperature-value")).toHaveTextContent(
+          "6500K"
+        ); // Temperature
       });
     });
   });

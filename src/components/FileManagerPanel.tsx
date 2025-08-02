@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import { Separator } from "@/components/ui/separator.tsx";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { ScrollArea } from "./ui/scroll-area.tsx";
+import { Separator } from "./ui/separator.tsx";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge.tsx";
-import { Input } from "@/components/ui/input";
+} from "./ui/dropdown-menu";
+
 import {
   Upload,
   FileText,
