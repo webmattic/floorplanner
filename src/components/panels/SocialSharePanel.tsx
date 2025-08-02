@@ -9,12 +9,9 @@ import { Badge } from "../ui/badge.tsx";
 import { Alert, AlertDescription } from "../ui/alert";
 import {
   Share2,
-  Link2,
   Facebook,
   Twitter,
   Linkedin,
-  Instagram,
-  Download,
   Eye,
   EyeOff,
   Copy,
@@ -108,7 +105,7 @@ export const SocialSharePanel: React.FC = () => {
     );
   }, []);
 
-  const deleteLink = useCallback((linkId: string) => {
+  const _deleteLink = useCallback((linkId: string) => {
     setShareLinks((prev) => prev.filter((link) => link.id !== linkId));
   }, []);
 

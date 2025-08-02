@@ -32,12 +32,11 @@ export const PanelAccessibilityProvider: React.FC<
     panels,
     keyboardShortcutsEnabled,
     focusPanel,
-    togglePanel,
     minimizeAllPanels,
     restoreAllPanels,
   } = usePanelStore();
 
-  const announcementRef = useRef<HTMLDivElement>(null);
+  const _announcementRef = useRef<HTMLDivElement>(null);
   const [announcement, setAnnouncement] = React.useState("");
 
   // Announce panel state changes
@@ -205,7 +204,7 @@ export const PanelAccessibilityProvider: React.FC<
 // Hook for panel-specific accessibility features
 export const usePanelAccessibility = (panelId: string) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const { panels, focusPanel: storeFocusPanel } = usePanelStore();
+  const { panels } = usePanelStore();
   const panelState = panels[panelId];
 
   // Focus management

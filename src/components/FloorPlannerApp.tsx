@@ -50,7 +50,6 @@ import CanvasDropZone from "./CanvasDropZone";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs.tsx";
 import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { appConfig } from "../config/app.config";
-import { mockApi } from "../services/mockApi";
 
 interface AppConfig {
   userId: string | undefined;

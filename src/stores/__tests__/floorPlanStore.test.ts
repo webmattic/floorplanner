@@ -45,7 +45,7 @@ describe('floorPlanStore', () => {
     });
 
     test('should handle errors gracefully', () => {
-        const { addRoom, setError, error } = floorPlanStore.getState();
+        const { setError, error } = floorPlanStore.getState();
         setError('Test error');
         expect(error).toBe('Test error');
     });

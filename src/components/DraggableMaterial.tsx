@@ -51,7 +51,7 @@ export const DraggableMaterial: React.FC<DraggableMaterialProps> = ({
 
   return (
     <Card
-      ref={drag}
+      ref={drag as any}
       className={cn(
         "cursor-grab transition-all overflow-hidden",
         isDragging ? "opacity-50" : "opacity-100",

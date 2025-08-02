@@ -4,8 +4,8 @@ import useFloorPlanStore from "../stores/floorPlanStore";
 
 interface RealTimeMeasurementsProps {
   isDrawing: boolean;
-  startPoint?: { x: number; y: number };
-  currentPoint?: { x: number; y: number };
+  startPoint?: { x: number; y: number } | null;
+  currentPoint?: { x: number; y: number } | null;
   tool?: string;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { FloatingPanel } from "../ui/floating-panel.tsx";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -6,7 +6,7 @@ import { Label } from "../ui/label.tsx";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card } from "../ui/card";
 import { Badge } from "../ui/badge.tsx";
 import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Separator } from "../ui/separator.tsx";
@@ -31,17 +31,11 @@ import {
 import { Alert, AlertDescription } from "../ui/alert";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
-  Users,
-  MessageCircle,
   Send,
   UserPlus,
-  Settings,
-  Eye,
-  EyeOff,
   Crown,
   Clock,
   Share2,
-  Link,
   Copy,
   MapPin,
   Reply,
@@ -54,10 +48,6 @@ import {
   Wifi,
   WifiOff,
   MousePointer,
-  Palette,
-  Move,
-  Square,
-  Package,
 } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 
@@ -126,8 +116,7 @@ const PERMISSION_LEVELS = [
 ];
 
 export const CollaborationPanel: React.FC = () => {
-  const { ws, isConnected, sendMessage, selectedElements } =
-    useFloorPlanStore();
+  const { ws, isConnected, sendMessage } = useFloorPlanStore();
 
   // Panel state
   const [activeTab, setActiveTab] = useState("users");
@@ -141,9 +130,9 @@ export const CollaborationPanel: React.FC = () => {
 
   // Comment pins state
   const [commentPins, setCommentPins] = useState<CommentPin[]>([]);
-  const [selectedPin, setSelectedPin] = useState<string | null>(null);
-  const [newComment, setNewComment] = useState("");
-  const [commentPosition, setCommentPosition] = useState<{
+  const [, setSelectedPin] = useState<string | null>(null);
+  const [, setNewComment] = useState("");
+  const [, setCommentPosition] = useState<{
     x: number;
     y: number;
   } | null>(null);
@@ -407,7 +396,7 @@ export const CollaborationPanel: React.FC = () => {
   };
 
   // Comment pin functions
-  const createCommentPin = useCallback(
+  const _createCommentPin = useCallback(
     (x: number, y: number, message: string) => {
       if (!sendMessage) return;
 

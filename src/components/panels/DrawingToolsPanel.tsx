@@ -22,7 +22,6 @@ import {
   RectangleHorizontal,
   Ruler,
   Type,
-  Grid3x3,
   MousePointer,
   Hand,
   RotateCcw,
@@ -31,7 +30,6 @@ import {
   Copy,
   AlertTriangle,
   Info,
-  Settings,
 } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 

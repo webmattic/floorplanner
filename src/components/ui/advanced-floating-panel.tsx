@@ -81,7 +81,7 @@ export const AdvancedFloatingPanel: React.FC<FloatingPanelProps> = ({
   const [isGrouped, setIsGrouped] = useState(false);
   // const [groupId, setGroupId] = useState<string | null>(null);
   const [isDocked, setIsDocked] = useState(false);
-  const [dockPosition, setDockPosition] = useState<
+  const [, setDockPosition] = useState<
     "left" | "right" | "top" | "bottom" | null
   >(null);
 

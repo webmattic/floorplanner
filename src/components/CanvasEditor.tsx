@@ -23,6 +23,7 @@ interface WallProps {
 }
 
 interface RoomProps {
+  id: string;
   x: number;
   y: number;
   width: number;
@@ -32,6 +33,7 @@ interface RoomProps {
 }
 
 interface FurnitureProps {
+  id: string;
   x: number;
   y: number;
   width: number;
@@ -56,7 +58,7 @@ const CanvasEditor = () => {
     start: { x: number; y: number };
     end: { x: number; y: number };
   } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [, setIsDragging] = useState(false);
   const [drawingStartPoint, setDrawingStartPoint] = useState<{
     x: number;
     y: number;
@@ -86,12 +88,11 @@ const CanvasEditor = () => {
     setSelectedElements,
     wallThickness,
     snapToGrid,
-    showClearanceWarnings,
   } = useFloorPlanStore();
 
   // Touch gesture handlers for mobile
   const handlePinch = useCallback(
-    (scale: number, x: number, y: number) => {
+    (scale: number, _x: number, _y: number) => {
       const stage = stageRef.current;
       if (!stage) return;
 
@@ -127,7 +128,7 @@ const CanvasEditor = () => {
     [currentTool]
   );
 
-  const handleDoubleTap = useCallback((x: number, y: number) => {
+  const handleDoubleTap = useCallback((_x: number, _y: number) => {
     // Double tap to reset zoom/pan
     useFloorPlanStore.getState().setZoom(1);
     useFloorPlanStore.getState().setPan(0, 0);
@@ -723,6 +724,7 @@ const CanvasEditor = () => {
       // Handle room creation with auto-calculated dimensions
       if (currentTool === "room") {
         useFloorPlanStore.getState().addRoom({
+          id: `room_${Date.now()}`,
           x: snappedPos.x,
           y: snappedPos.y,
           width: gridSize * 4, // 4 grid units wide

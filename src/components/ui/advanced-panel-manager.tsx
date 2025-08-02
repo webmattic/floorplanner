@@ -4,7 +4,6 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label.tsx";
 import { Switch } from "../ui/switch";
 import { Slider } from "../ui/slider.tsx";
-import { Separator } from "../ui/separator.tsx";
 import { Badge } from "../ui/badge.tsx";
 import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
@@ -17,43 +16,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
   Settings,
   Grid3x3,
   Magnet,
-  Keyboard,
-  Zap,
   Save,
   Upload,
   Download,
   RotateCcw,
   Minimize2,
   Maximize2,
-  Move,
-  AlignLeft,
-  AlignRight,
-  AlignVerticalJustifyStart as AlignTop,
-  AlignVerticalJustifyEnd as AlignBottom,
-  ArrowLeftRight,
-  ArrowUpDown,
   Layers,
   Eye,
   EyeOff,
-  Lock,
-  Unlock,
-  Copy,
   Trash2,
   Plus,
-  Folder,
   FolderOpen,
   Star,
   Info,
@@ -61,13 +40,13 @@ import {
 } from "lucide-react";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 
-interface WorkspacePreset {
-  id: string;
-  name: string;
-  description?: string;
-  isDefault?: boolean;
-  createdAt: number;
-}
+// interface WorkspacePreset {
+//   id: string;
+//   name: string;
+//   description?: string;
+//   isDefault?: boolean;
+//   createdAt: number;
+// }
 
 export const AdvancedPanelManager: React.FC = () => {
   const {
@@ -82,8 +61,7 @@ export const AdvancedPanelManager: React.FC = () => {
     panelAnimations,
 
     // Panel management functions
-    showPanel,
-    hidePanel,
+
     togglePanel,
     minimizeAllPanels,
     restoreAllPanels,
@@ -107,9 +85,6 @@ export const AdvancedPanelManager: React.FC = () => {
 
     // Grouping functions
     createGroup,
-    removeGroup,
-    addPanelToGroup,
-    removePanelFromGroup,
   } = usePanelStore();
 
   const [activeTab, setActiveTab] = useState("panels");
@@ -125,7 +100,7 @@ export const AdvancedPanelManager: React.FC = () => {
   const visiblePanels = Object.keys(panels).filter(
     (id) => panels[id].isVisible
   );
-  const minimizedPanels = Object.keys(panels).filter(
+  const _minimizedPanels = Object.keys(panels).filter(
     (id) => panels[id].isMinimized
   );
 
@@ -149,7 +124,7 @@ export const AdvancedPanelManager: React.FC = () => {
   const handleCreateWorkspace = useCallback(() => {
     if (!newWorkspaceName.trim()) return;
 
-    const presetId = createWorkspaceLayout(
+    const _presetId = createWorkspaceLayout(
       newWorkspaceName,
       newWorkspaceDescription
     );
@@ -418,7 +393,7 @@ export const AdvancedPanelManager: React.FC = () => {
                   className="w-full justify-start"
                   disabled={selectedPanels.length < 2}
                 >
-                  <DistributeHorizontal className="h-4 w-4 mr-2" />
+                  <div className="h-4 w-4 mr-2" />
                   Distribute Horizontally
                 </Button>
                 <Button
@@ -428,7 +403,7 @@ export const AdvancedPanelManager: React.FC = () => {
                   className="w-full justify-start"
                   disabled={selectedPanels.length < 2}
                 >
-                  <DistributeVertical className="h-4 w-4 mr-2" />
+                  <div className="h-4 w-4 mr-2" />
                   Distribute Vertically
                 </Button>
               </CardContent>

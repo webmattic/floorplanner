@@ -6,14 +6,7 @@ import { Badge } from "../ui/badge.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
 import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Alert, AlertDescription } from "../ui/alert";
-import {
-  RotateCcw,
-  RotateCw,
-  CheckCircle,
-  AlertCircle,
-  RefreshCw,
-  Save,
-} from "lucide-react";
+import { RotateCcw, RotateCw, AlertCircle } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 
 export const RevisionHistoryPanel: React.FC = () => {

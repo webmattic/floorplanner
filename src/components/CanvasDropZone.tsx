@@ -80,7 +80,7 @@ const CanvasDropZone: React.FC<DropZoneProps> = ({ children }) => {
 
   return (
     <div
-      ref={drop}
+      ref={drop as any}
       id="canvas-container"
       className="relative w-full h-full"
       style={{

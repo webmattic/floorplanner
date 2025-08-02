@@ -38,7 +38,7 @@ interface GalleryProps {
 const Gallery: React.FC<GalleryProps> = ({
   showPublicOnly = false,
   showTemplatesOnly = false,
-  allowEdit = false,
+  allowEdit: _allowEdit = false,
 }) => {
   const [floorplans, setFloorplans] = useState<FloorPlan[]>([]);
   const [loading, setLoading] = useState(false);

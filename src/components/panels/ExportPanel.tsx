@@ -42,8 +42,6 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Play,
-  Pause,
   RefreshCw,
   Save,
   Star,
@@ -220,8 +218,8 @@ export const ExportPanel: React.FC = () => {
     // Skip API calls in mock mode
     if (apiConfig.baseUrl.includes("localhost:3001")) {
       setPresets([
-        { id: 1, name: "High Quality", format: "PNG", settings: {} },
-        { id: 2, name: "Web Optimized", format: "JPG", settings: {} },
+        { id: "1", name: "High Quality", format: "PNG", settings: {} },
+        { id: "2", name: "Web Optimized", format: "JPG", settings: {} },
       ]);
       return;
     }

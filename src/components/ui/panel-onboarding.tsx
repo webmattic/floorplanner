@@ -21,17 +21,14 @@ import {
   CheckCircle,
   Lightbulb,
   Keyboard,
-  Mouse,
   Smartphone,
-  Monitor,
   Zap,
-  Star,
   ArrowRight,
   Eye,
   Move,
   Settings,
 } from "lucide-react";
-import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
+import { usePanelStore } from "../../stores/panelStore";
 
 interface OnboardingStep {
   id: string;
@@ -53,20 +50,14 @@ interface OnboardingTour {
 }
 
 export const PanelOnboarding: React.FC = () => {
-  const {
-    showPanel,
-    hidePanel,
-    focusPanel,
-    resetPanelLayout,
-    createWorkspaceLayout,
-  } = usePanelStore();
+  const { showPanel, createWorkspaceLayout } = usePanelStore();
 
   const [isOpen, setIsOpen] = useState(false);
   const [currentTour, setCurrentTour] = useState<string | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [completedTours, setCompletedTours] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [showOnFirstVisit, setShowOnFirstVisit] = useState(true);
+  const [showOnFirstVisit] = useState(true);
 
   // Define onboarding tours
   const tours: OnboardingTour[] = [
@@ -85,7 +76,8 @@ export const PanelOnboarding: React.FC = () => {
               <div className="text-center">
                 <div className="text-6xl mb-4">🏠</div>
                 <p className="text-lg">
-                  FloorPlanner uses a flexible panel system that lets you customize your workspace exactly how you want it.
+                  FloorPlanner uses a flexible panel system that lets you
+                  customize your workspace exactly how you want it.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -116,7 +108,10 @@ export const PanelOnboarding: React.FC = () => {
           panelId: "drawingTools",
           content: (
             <div className="space-y-3">
-              <p>The Drawing Tools panel contains all the tools you need to create your floor plan:</p>
+              <p>
+                The Drawing Tools panel contains all the tools you need to
+                create your floor plan:
+              </p>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-blue-500 rounded-full" />
@@ -146,7 +141,9 @@ export const PanelOnboarding: React.FC = () => {
           panelId: "furnitureLibrary",
           content: (
             <div className="space-y-3">
-              <p>The Furniture Library lets you add furniture to your design:</p>
+              <p>
+                The Furniture Library lets you add furniture to your design:
+              </p>
               <ul className="space-y-2 text-sm">
                 <li>• Browse furniture by category</li>
                 <li>• Drag and drop items onto your floor plan</li>
@@ -155,7 +152,8 @@ export const PanelOnboarding: React.FC = () => {
               </ul>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-sm text-blue-700">
-                  💡 <strong>Tip:</strong> Items automatically snap to grid when enabled!
+                  💡 <strong>Tip:</strong> Items automatically snap to grid when
+                  enabled!
                 </p>
               </div>
             </div>
@@ -207,7 +205,8 @@ export const PanelOnboarding: React.FC = () => {
               </div>
               <div className="bg-green-50 p-3 rounded-lg">
                 <p className="text-sm text-green-700">
-                  🎯 <strong>Pro Tip:</strong> Use Alt + number to focus panels instead of toggling them!
+                  🎯 <strong>Pro Tip:</strong> Use Alt + number to focus panels
+                  instead of toggling them!
                 </p>
               </div>
             </div>
@@ -224,7 +223,8 @@ export const PanelOnboarding: React.FC = () => {
                 Congratulations! You've completed the basic tour.
               </p>
               <p className="text-sm text-muted-foreground">
-                You can always access this tour again from the help menu, or explore advanced features with other tours.
+                You can always access this tour again from the help menu, or
+                explore advanced features with other tours.
               </p>
               <div className="flex justify-center gap-2 mt-4">
                 <Button
@@ -355,10 +355,12 @@ export const PanelOnboarding: React.FC = () => {
   // Check if user is new
   useEffect(() => {
     const hasVisited = localStorage.getItem("floorplanner-visited");
-    const completed = JSON.parse(localStorage.getItem("floorplanner-completed-tours") || "[]");
-    
+    const completed = JSON.parse(
+      localStorage.getItem("floorplanner-completed-tours") || "[]"
+    );
+
     setCompletedTours(completed);
-    
+
     if (!hasVisited && showOnFirstVisit) {
       setIsOpen(true);
       setCurrentTour("getting-started");
@@ -370,14 +372,14 @@ export const PanelOnboarding: React.FC = () => {
   useEffect(() => {
     if (!isPlaying || !currentTour) return;
 
-    const tour = tours.find(t => t.id === currentTour);
+    const tour = tours.find((t) => t.id === currentTour);
     if (!tour || currentStep >= tour.steps.length - 1) {
       setIsPlaying(false);
       return;
     }
 
     const timer = setTimeout(() => {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }, 5000); // 5 seconds per step
 
     return () => clearTimeout(timer);
@@ -390,16 +392,21 @@ export const PanelOnboarding: React.FC = () => {
   }, []);
 
   const nextStep = useCallback(() => {
-    const tour = tours.find(t => t.id === currentTour);
+    const tour = tours.find((t) => t.id === currentTour);
     if (!tour) return;
 
     if (currentStep < tour.steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     } else {
       // Tour completed
-      const newCompleted = [...completedTours, currentTour];
+      const newCompleted = [...completedTours, currentTour].filter(
+        (id): id is string => id !== null
+      );
       setCompletedTours(newCompleted);
-      localStorage.setItem("floorplanner-completed-tours", JSON.stringify(newCompleted));
+      localStorage.setItem(
+        "floorplanner-completed-tours",
+        JSON.stringify(newCompleted)
+      );
       setIsOpen(false);
       setCurrentTour(null);
       setCurrentStep(0);
@@ -408,7 +415,7 @@ export const PanelOnboarding: React.FC = () => {
 
   const prevStep = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   }, [currentStep]);
 
@@ -423,17 +430,19 @@ export const PanelOnboarding: React.FC = () => {
   useEffect(() => {
     if (!currentTour) return;
 
-    const tour = tours.find(t => t.id === currentTour);
+    const tour = tours.find((t) => t.id === currentTour);
     const step = tour?.steps[currentStep];
-    
+
     if (step?.action) {
       step.action();
     }
   }, [currentTour, currentStep, tours]);
 
-  const currentTourData = tours.find(t => t.id === currentTour);
+  const currentTourData = tours.find((t) => t.id === currentTour);
   const currentStepData = currentTourData?.steps[currentStep];
-  const progress = currentTourData ? ((currentStep + 1) / currentTourData.steps.length) * 100 : 0;
+  const progress = currentTourData
+    ? ((currentStep + 1) / currentTourData.steps.length) * 100
+    : 0;
 
   return (
     <>
@@ -458,15 +467,24 @@ export const PanelOnboarding: React.FC = () => {
                 <TabsTrigger value="advanced">Advanced</TabsTrigger>
               </TabsList>
 
-              {["beginner", "intermediate", "advanced"].map(category => (
-                <TabsContent key={category} value={category} className="space-y-4">
+              {["beginner", "intermediate", "advanced"].map((category) => (
+                <TabsContent
+                  key={category}
+                  value={category}
+                  className="space-y-4"
+                >
                   {tours
-                    .filter(tour => tour.category === category)
-                    .map(tour => (
-                      <Card key={tour.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                    .filter((tour) => tour.category === category)
+                    .map((tour) => (
+                      <Card
+                        key={tour.id}
+                        className="cursor-pointer hover:shadow-md transition-shadow"
+                      >
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-lg">{tour.name}</CardTitle>
+                            <CardTitle className="text-lg">
+                              {tour.name}
+                            </CardTitle>
                             <div className="flex items-center gap-2">
                               {completedTours.includes(tour.id) && (
                                 <CheckCircle className="h-4 w-4 text-green-500" />
@@ -484,9 +502,15 @@ export const PanelOnboarding: React.FC = () => {
                           <Button
                             onClick={() => startTour(tour.id)}
                             className="w-full"
-                            variant={completedTours.includes(tour.id) ? "outline" : "default"}
+                            variant={
+                              completedTours.includes(tour.id)
+                                ? "outline"
+                                : "default"
+                            }
                           >
-                            {completedTours.includes(tour.id) ? "Retake Tour" : "Start Tour"}
+                            {completedTours.includes(tour.id)
+                              ? "Retake Tour"
+                              : "Start Tour"}
                             <ArrowRight className="h-4 w-4 ml-2" />
                           </Button>
                         </CardContent>
@@ -541,10 +565,8 @@ export const PanelOnboarding: React.FC = () => {
               <p className="text-sm text-muted-foreground">
                 {currentStepData.description}
               </p>
-              
-              <div className="min-h-[200px]">
-                {currentStepData.content}
-              </div>
+
+              <div className="min-h-[200px]">{currentStepData.content}</div>
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t">

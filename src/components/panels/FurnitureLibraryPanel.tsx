@@ -3,7 +3,7 @@ import { FloatingPanel } from "../ui/floating-panel.tsx";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { ScrollArea } from "../ui/scroll-area.tsx";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs.tsx";
 import { Card, CardContent } from "../ui/card";
 import { Badge } from "../ui/badge.tsx";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";

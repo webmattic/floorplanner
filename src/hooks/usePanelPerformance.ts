@@ -195,7 +195,7 @@ export const usePanelPerformance = () => {
 
   // Performance actions
   const optimizePerformance = useCallback(() => {
-    const { minimizeAllPanels, resetPanelLayout } = usePanelStore.getState();
+    const { minimizeAllPanels } = usePanelStore.getState();
     
     if (metrics.frameRate < 20) {
       // Emergency optimization: minimize all panels

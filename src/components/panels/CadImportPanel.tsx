@@ -5,11 +5,15 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label.tsx";
 import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Badge } from "../ui/badge.tsx";
 import { Progress } from "../ui/progress.tsx";
-import { Separator } from "../ui/separator.tsx";
-import { Switch } from "../ui/switch";
 import {
   Select,
   SelectContent,
@@ -25,15 +29,9 @@ import {
   FileText,
   AlertTriangle,
   CheckCircle,
-  X,
-  Settings,
-  Download,
   RefreshCw,
   Eye,
   EyeOff,
-  Play,
-  Pause,
-  RotateCcw,
 } from "lucide-react";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 
@@ -254,12 +252,18 @@ const CADImportAPI = {
 };
 
 export const CadImportPanel: React.FC = () => {
-  const { currentFloorPlan, importCADFile } = useFloorPlanStore();
+  const { currentFloorPlan, apiConfig } = useFloorPlanStore();
+
+  // Mock importCADFile function since it's not implemented in the store yet
+  const importCADFile = async (file: File, settings: ImportSettings) => {
+    console.log("Importing CAD file:", file.name, settings);
+    // This would be implemented when CAD import functionality is added
+  };
 
   // State management
   const [currentImport, setCurrentImport] = useState<ImportJob | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [, setIsUploading] = useState(false);
+  const [, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "upload" | "processing" | "layers" | "results"
@@ -282,7 +286,7 @@ export const CadImportPanel: React.FC = () => {
       }
     >
   >({});
-  const [activeImports, setActiveImports] = useState<ImportJob[]>([]);
+  const [, setActiveImports] = useState<ImportJob[]>([]);
 
   // File format information
   const supportedFormats: Record<string, SupportedFormat> = {
@@ -354,12 +358,12 @@ export const CadImportPanel: React.FC = () => {
       if (!apiConfig || apiConfig.baseUrl.includes("localhost:3001")) {
         setTemplates([
           {
-            id: 1,
+            id: "1",
             name: "Residential Template",
             description: "Standard home layout",
           },
           {
-            id: 2,
+            id: "2",
             name: "Office Template",
             description: "Commercial office space",
           },
@@ -373,12 +377,12 @@ export const CadImportPanel: React.FC = () => {
       console.error("Failed to load templates:", err);
       setTemplates([
         {
-          id: 1,
+          id: "1",
           name: "Residential Template",
           description: "Standard home layout",
         },
         {
-          id: 2,
+          id: "2",
           name: "Office Template",
           description: "Commercial office space",
         },
@@ -454,7 +458,7 @@ export const CadImportPanel: React.FC = () => {
         // Create import job
         const result = await CADImportAPI.uploadFile(
           file,
-          currentFloorPlan?.id,
+          currentFloorPlan?.id?.toString(),
           importSettings
         );
 
@@ -880,9 +884,9 @@ export const CadImportPanel: React.FC = () => {
                       </Tooltip>
                       <Checkbox
                         checked={layerSettings[layer.id]?.isImportable || false}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={(checked: boolean) =>
                           handleLayerUpdate(layer.id, {
-                            isImportable: checked as boolean,
+                            isImportable: checked,
                           })
                         }
                       />

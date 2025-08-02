@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator.tsx";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -7,7 +7,6 @@ import {
   Square,
   Circle,
   Pen,
-  Eraser,
   Undo,
   Redo,
   Grid3X3,
@@ -40,7 +39,7 @@ export const TouchDrawingTools: React.FC<TouchDrawingToolsProps> = ({
     currentTool,
     setCurrentTool,
     snapToGrid,
-    toggleSnapToGrid,
+    setSnapToGrid,
     zoom,
     setZoom,
     panX,
@@ -49,11 +48,18 @@ export const TouchDrawingTools: React.FC<TouchDrawingToolsProps> = ({
     addWall,
     addRoom,
     addFurniture,
-    canUndo,
-    canRedo,
     undo,
     redo,
+    _undoStack,
+    _redoStack,
   } = useFloorPlanStore();
+
+  // Derived state for undo/redo availability
+  const canUndo = _undoStack && _undoStack.length > 0;
+  const canRedo = _redoStack && _redoStack.length > 0;
+
+  // Helper function for toggling snap to grid
+  const toggleSnapToGrid = () => setSnapToGrid(!snapToGrid);
 
   const [gestureState, setGestureState] = useState<TouchGestureState>({
     isDrawing: false,
@@ -237,6 +243,7 @@ export const TouchDrawingTools: React.FC<TouchDrawingToolsProps> = ({
           const height = Math.abs(finalEnd.y - finalStart.y);
           if (width > 20 && height > 20) {
             addRoom({
+              id: `room_${Date.now()}`,
               x: Math.min(finalStart.x, finalEnd.x),
               y: Math.min(finalStart.y, finalEnd.y),
               width,

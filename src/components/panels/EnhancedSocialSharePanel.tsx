@@ -4,7 +4,6 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
-import { ScrollArea } from "../ui/scroll-area.tsx";
 import { Alert, AlertDescription } from "../ui/alert";
 import {
   Share2,

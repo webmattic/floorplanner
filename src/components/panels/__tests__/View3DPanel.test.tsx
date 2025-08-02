@@ -263,10 +263,6 @@ describe("View3DPanel", () => {
     const cameraTab = screen.getByText("Camera");
     fireEvent.click(cameraTab);
 
-    // Switch to camera tab
-    const cameraTab = screen.getByText("Camera");
-    fireEvent.click(cameraTab);
-
     await waitFor(() => {
       const topViewButton = screen.getByTestId("camera-preset-top");
       fireEvent.click(topViewButton);
@@ -380,16 +376,16 @@ describe("View3DPanel", () => {
       // Switch to camera tab
       const cameraTab = screen.getByText("Camera");
       fireEvent.click(cameraTab);
+    });
 
-      await waitFor(() => {
-        expect(screen.getByTestId("main-light-value")).toHaveTextContent("1.0"); // Main light
-        expect(screen.getByTestId("ambient-light-value")).toHaveTextContent(
-          "0.5"
-        ); // Ambient light
-        expect(screen.getByTestId("temperature-value")).toHaveTextContent(
-          "6500K"
-        ); // Temperature
-      });
+    await waitFor(() => {
+      expect(screen.getByTestId("main-light-value")).toHaveTextContent("1.0"); // Main light
+      expect(screen.getByTestId("ambient-light-value")).toHaveTextContent(
+        "0.5"
+      ); // Ambient light
+      expect(screen.getByTestId("temperature-value")).toHaveTextContent(
+        "6500K"
+      ); // Temperature
     });
   });
 
