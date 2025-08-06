@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback, useMemo, useRef } from "react";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 import useFloorPlanStore from "../../stores/floorPlanStore";
 import { ErrorBoundary, PanelErrorBoundary } from "../ui/error-boundary";
@@ -147,36 +147,37 @@ const useAutoSave = (enabled: boolean, interval: number) => {
     [currentFloorPlan, panelStates]
   );
 
+  const saveDataRef = useRef(saveData);
+  saveDataRef.current = saveData;
+
   useEffect(() => {
     if (!enabled) return;
 
     const intervalId = setInterval(() => {
       const now = Date.now();
       if (now - lastSave.current >= interval) {
-        saveData();
+        saveDataRef.current();
       }
     }, interval);
 
     return () => clearInterval(intervalId);
-  }, [enabled, interval, saveData]);
+  }, [enabled, interval]);
 
   // Save on page unload
   useEffect(() => {
     if (!enabled) return;
 
     const handleBeforeUnload = () => {
-      saveData();
+      saveDataRef.current();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [enabled, saveData]);
+  }, [enabled]);
 };
 
 // Keyboard shortcuts manager
 const useKeyboardShortcuts = (enabled: boolean) => {
-  const { showPanel, hidePanel, togglePanel } = usePanelStore();
-
   useEffect(() => {
     if (!enabled) return;
 
@@ -202,6 +203,8 @@ const useKeyboardShortcuts = (enabled: boolean) => {
         if (panelConfig) {
           event.preventDefault();
 
+          const { hidePanel, togglePanel } = usePanelStore.getState();
+
           if (event.shiftKey) {
             hidePanel(panelConfig.id);
           } else {
@@ -214,6 +217,7 @@ const useKeyboardShortcuts = (enabled: boolean) => {
           case "h":
             event.preventDefault();
             // Hide all panels
+            const { hidePanel } = usePanelStore.getState();
             Object.keys(PANEL_CONFIGS).forEach(hidePanel);
             break;
           case "r":
@@ -227,7 +231,7 @@ const useKeyboardShortcuts = (enabled: boolean) => {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [enabled, showPanel, hidePanel, togglePanel]);
+  }, [enabled]);
 };
 
 // Panel validation and health checks

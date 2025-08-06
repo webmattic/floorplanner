@@ -3,6 +3,7 @@ import useFloorPlanStore from "../stores/floorPlanStore";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Badge } from "./ui/badge.tsx";
 import { Calculator, AlertTriangle, CheckCircle } from "lucide-react";
+import { calculateAutomaticRoomMeasurements } from "../utils/geometry";
 
 interface MeasurementValidatorProps {
   showFloatingFeedback?: boolean;
@@ -17,17 +18,24 @@ const MeasurementValidator: React.FC<MeasurementValidatorProps> = ({
   const rooms = useFloorPlanStore((state) => state.rooms);
   const walls = useFloorPlanStore((state) => state.walls);
   const furniture = useFloorPlanStore((state) => state.furniture);
-  const clearanceIssues = useFloorPlanStore((state) =>
-    state.getClearanceIssues()
+  const getClearanceIssues = useFloorPlanStore(
+    (state) => state.getClearanceIssues
   );
-  const calculateTotalArea = useFloorPlanStore(
-    (state) => state.calculateTotalArea
-  );
+  const clearanceIssues = getClearanceIssues ? getClearanceIssues() : [];
+  const calculateTotalArea =
+    useFloorPlanStore((state) => state.calculateTotalArea) || (() => 0);
   const measurementUnit = useFloorPlanStore((state) => state.measurementUnit);
 
   useEffect(() => {
     // Recalculate measurements whenever elements change
-    const totalArea = useFloorPlanStore.getState().calculateTotalArea();
+    let totalArea = 0;
+    try {
+      totalArea =
+        typeof calculateTotalArea === "function" ? calculateTotalArea() : 0;
+    } catch (error) {
+      console.warn("Error calculating total area:", error);
+      totalArea = 0;
+    }
     const roomCount = rooms.length;
     const furnitureCount = furniture.length;
     const wallCount = walls.length;
@@ -49,9 +57,6 @@ const MeasurementValidator: React.FC<MeasurementValidatorProps> = ({
 
     // Check minimum room sizes
     rooms.forEach((room) => {
-      const {
-        calculateAutomaticRoomMeasurements,
-      } = require("../utils/geometry");
       const roomMeasurements = calculateAutomaticRoomMeasurements(
         room,
         measurementUnit
@@ -62,9 +67,11 @@ const MeasurementValidator: React.FC<MeasurementValidatorProps> = ({
         validations.push({
           type: "warning",
           category: "room_size",
-          message: `Room "${room.label || room.id}" is very small (${
-            roomMeasurements.formatted.area
-          })`,
+          message: `Room "${
+            room.label || room.id
+          }" is very small (${roomMeasurements.area.toFixed(
+            1
+          )} ${measurementUnit}²)`,
           elementId: room.id,
         });
       }
@@ -108,8 +115,8 @@ const MeasurementValidator: React.FC<MeasurementValidatorProps> = ({
     walls,
     furniture,
     clearanceIssues,
-    calculateTotalArea,
     measurementUnit,
+    calculateTotalArea,
   ]);
 
   if (!showFloatingFeedback || !measurements) return null;

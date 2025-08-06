@@ -56,17 +56,7 @@ interface MeasurementToolsProps {
   unit?: "ft" | "m" | "px";
 }
 
-// Define FloorPlanStore interface to avoid TypeScript errors
-interface FloorPlanStoreState {
-  measurements?: Measurement[];
-  clearanceDetection?: boolean;
-  measurementUnit?: "ft" | "m" | "px";
-  toggleClearanceDetection?: () => void;
-  setMeasurementUnit?: (unit: "ft" | "m" | "px") => void;
-  removeMeasurement?: (id: string) => void;
-  getClearanceIssues?: () => ClearanceIssue[];
-  calculateTotalArea?: () => number;
-}
+// Interface removed - using store directly with proper selectors
 
 const MeasurementTools: React.FC<MeasurementToolsProps> = ({
   measurements: propMeasurements,
@@ -80,22 +70,32 @@ const MeasurementTools: React.FC<MeasurementToolsProps> = ({
     useState(true);
 
   // Use the store to manage measurements, clearance detection, and preferred units
-  const floorPlanStore = useFloorPlanStore() as unknown as FloorPlanStoreState;
-  const measurements = floorPlanStore.measurements || propMeasurements || [];
-  const clearanceDetection = floorPlanStore.clearanceDetection || true;
+  const measurements =
+    useFloorPlanStore((state) => state.measurements) || propMeasurements || [];
+  const clearanceDetection =
+    useFloorPlanStore((state) => state.clearanceDetection) || true;
   const setClearanceDetection =
-    floorPlanStore.toggleClearanceDetection || (() => { });
-  const preferredUnit = floorPlanStore.measurementUnit || propUnit;
-  const setPreferredUnit = floorPlanStore.setMeasurementUnit || (() => { });
-  const calculateTotalArea = floorPlanStore.calculateTotalArea || (() => 0);
+    useFloorPlanStore((state) => state.toggleClearanceDetection) || (() => {});
+  const preferredUnit =
+    useFloorPlanStore((state) => state.measurementUnit) || propUnit;
+  const setPreferredUnit =
+    useFloorPlanStore((state) => state.setMeasurementUnit) || (() => {});
+  const calculateTotalArea = useFloorPlanStore(
+    (state) => state.calculateTotalArea
+  );
+  const removeMeasurementFromStore = useFloorPlanStore(
+    (state) => state.removeMeasurement
+  );
   const onRemoveMeasurement = (id: string) => {
-    floorPlanStore.removeMeasurement?.(id);
+    removeMeasurementFromStore?.(id);
     propOnRemoveMeasurement?.(id);
   };
 
   // Get clearance issues from the store
-  const clearanceIssues: ClearanceIssue[] =
-    floorPlanStore.getClearanceIssues?.() || [];
+  const getClearanceIssues = useFloorPlanStore(
+    (state) => state.getClearanceIssues
+  );
+  const clearanceIssues: ClearanceIssue[] = getClearanceIssues?.() || [];
 
   const tools = [
     {
@@ -248,16 +248,16 @@ const MeasurementTools: React.FC<MeasurementToolsProps> = ({
                 <span className="text-muted-foreground">
                   Manual Measurements:
                 </span>
-                <div className="font-medium">
-                  {formatArea(getTotalArea())}
-                </div>
+                <div className="font-medium">{formatArea(getTotalArea())}</div>
               </div>
               <div>
-                <span className="text-muted-foreground">
-                  Floor Plan Area:
-                </span>
+                <span className="text-muted-foreground">Floor Plan Area:</span>
                 <div className="font-medium">
-                  {formatArea(calculateTotalArea())}
+                  {formatArea(
+                    typeof calculateTotalArea === "function"
+                      ? calculateTotalArea()
+                      : 0
+                  )}
                 </div>
               </div>
               <div>
@@ -407,7 +407,9 @@ const MeasurementTools: React.FC<MeasurementToolsProps> = ({
               <Alert className="bg-yellow-50 border-yellow-200">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Door Clearance Issue</AlertTitle>
-                <AlertDescription>Door swing overlaps with furniture.</AlertDescription>
+                <AlertDescription>
+                  Door swing overlaps with furniture.
+                </AlertDescription>
               </Alert>
               {/* Render other clearance issues if present */}
               {clearanceIssues.length > 0 && (

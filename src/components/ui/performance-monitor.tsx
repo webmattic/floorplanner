@@ -187,11 +187,21 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 }) => {
   const metrics = usePerformanceMonitor(enabled);
 
+  const onMetricsUpdateRef = useRef(onMetricsUpdate);
+  onMetricsUpdateRef.current = onMetricsUpdate;
+
   useEffect(() => {
-    if (onMetricsUpdate) {
-      onMetricsUpdate(metrics);
+    if (onMetricsUpdateRef.current) {
+      onMetricsUpdateRef.current(metrics);
     }
-  }, [metrics, onMetricsUpdate]);
+  }, [
+    metrics.fps,
+    metrics.memoryUsage,
+    metrics.visiblePanelCount,
+    metrics.panelCount,
+    metrics.renderTime,
+    metrics.updateTime,
+  ]);
 
   if (!enabled || process.env.NODE_ENV !== "development") {
     return null;

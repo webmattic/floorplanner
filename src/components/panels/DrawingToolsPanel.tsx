@@ -114,7 +114,7 @@ export const DrawingToolsPanel: React.FC = () => {
     toggleGrid,
     gridSize,
     setGridSize,
-    selectedElements,
+    selectedElements = [],
     clearSelection,
     wallThickness,
     setWallThickness,
@@ -138,6 +138,8 @@ export const DrawingToolsPanel: React.FC = () => {
   };
 
   const handleDeleteSelected = () => {
+    if (!selectedElements || selectedElements.length === 0) return;
+
     selectedElements.forEach((element) => {
       switch (element.type) {
         case "wall":

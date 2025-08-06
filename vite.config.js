@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
         manifest: require("./public/manifest.json"),
         workbox: {
           globPatterns: ["**/*.{js,css,html,png,svg,json}"],
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
         },
         devOptions: {
           enabled: mode === "standalone",

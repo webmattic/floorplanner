@@ -101,7 +101,7 @@ const FloorPlannerApp: React.FC<FloorPlannerAppProps> = ({ config }) => {
     if (deviceInfo.isMobile || deviceInfo.isTablet) {
       reorganizePanels();
     }
-  }, [config, initializeApp, setApiConfig, deviceInfo, reorganizePanels]);
+  }, [config]);
 
   const handleCollaborationRequest = () => {
     // Show success message

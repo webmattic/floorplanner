@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label.tsx";
-import { Switch } from "../ui/switch";
-import { Slider } from "../ui/slider.tsx";
-import { Badge } from "../ui/badge.tsx";
-import { ScrollArea } from "../ui/scroll-area.tsx";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "./button";
+import { Input } from "./input";
+import { Label } from "./label";
+import { Switch } from "./switch";
+import { Slider } from "./slider";
+import { Badge } from "./badge";
+import { ScrollArea } from "./scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "./card";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+} from "./dialog";
+import { Alert, AlertDescription } from "./alert";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 import {
   Settings,
   Grid3x3,
@@ -40,14 +40,6 @@ import {
 } from "lucide-react";
 import { usePanelStore, PANEL_CONFIGS } from "../../stores/panelStore";
 
-// interface WorkspacePreset {
-//   id: string;
-//   name: string;
-//   description?: string;
-//   isDefault?: boolean;
-//   createdAt: number;
-// }
-
 export const AdvancedPanelManager: React.FC = () => {
   const {
     panels,
@@ -61,7 +53,6 @@ export const AdvancedPanelManager: React.FC = () => {
     panelAnimations,
 
     // Panel management functions
-
     togglePanel,
     minimizeAllPanels,
     restoreAllPanels,
@@ -85,6 +76,10 @@ export const AdvancedPanelManager: React.FC = () => {
 
     // Grouping functions
     createGroup,
+    removeGroup,
+
+    // Workspace functions
+    deletePreset,
   } = usePanelStore();
 
   const [activeTab, setActiveTab] = useState("panels");
@@ -99,9 +94,6 @@ export const AdvancedPanelManager: React.FC = () => {
 
   const visiblePanels = Object.keys(panels).filter(
     (id) => panels[id].isVisible
-  );
-  const _minimizedPanels = Object.keys(panels).filter(
-    (id) => panels[id].isMinimized
   );
 
   const handlePanelSelection = useCallback(
@@ -124,10 +116,7 @@ export const AdvancedPanelManager: React.FC = () => {
   const handleCreateWorkspace = useCallback(() => {
     if (!newWorkspaceName.trim()) return;
 
-    const _presetId = createWorkspaceLayout(
-      newWorkspaceName,
-      newWorkspaceDescription
-    );
+    createWorkspaceLayout(newWorkspaceName, newWorkspaceDescription);
     setNewWorkspaceName("");
     setNewWorkspaceDescription("");
     setIsCreateWorkspaceOpen(false);
@@ -676,10 +665,7 @@ export const AdvancedPanelManager: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          // Delete preset logic would go here
-                          console.log("Delete preset:", preset.id);
-                        }}
+                        onClick={() => deletePreset(preset.id)}
                         className="h-6 w-6 p-0"
                       >
                         <Trash2 className="h-3 w-3" />
@@ -726,7 +712,9 @@ export const AdvancedPanelManager: React.FC = () => {
                 </div>
                 <Switch
                   checked={snapToEdges}
-                  onCheckedChange={enableMagneticBoundaries}
+                  onCheckedChange={(checked) =>
+                    enableMagneticBoundaries(checked)
+                  }
                 />
               </div>
 
@@ -739,7 +727,9 @@ export const AdvancedPanelManager: React.FC = () => {
                 </div>
                 <Switch
                   checked={magneticBoundaries}
-                  onCheckedChange={enableMagneticBoundaries}
+                  onCheckedChange={(checked) =>
+                    enableMagneticBoundaries(checked)
+                  }
                 />
               </div>
 

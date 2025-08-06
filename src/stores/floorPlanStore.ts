@@ -1,4 +1,14 @@
 import { create } from "zustand";
+import {
+  calculateAutomaticRoomMeasurements,
+  calculateWallLength,
+  convertUnit,
+  checkClearance,
+  checkDoorSwingClearance,
+  calculateWalkingClearance,
+  calculateRealTimeDimensions,
+  getMeasurementAnnotations,
+} from "../utils/geometry";
 
 // Type definitions
 export interface Wall {
@@ -492,12 +502,7 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
     const issues: ClearanceIssue[] = [];
 
-    // Import enhanced clearance checking functions
-    const {
-      checkClearance,
-      checkDoorSwingClearance,
-      calculateWalkingClearance,
-    } = require("../utils/geometry");
+    // Use imported clearance checking functions
 
     // Check furniture-to-furniture clearance
     furniture.forEach((item, index) => {
@@ -828,25 +833,34 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
   // Enhanced measurement functions
   calculateTotalArea: () => {
-    const { rooms, measurementUnit } = get();
-    const { calculateAutomaticRoomMeasurements } = require("../utils/geometry");
+    try {
+      const { rooms, measurementUnit } = get();
 
-    return rooms.reduce((total, room) => {
-      const measurements = calculateAutomaticRoomMeasurements(
-        room,
-        measurementUnit
-      );
-      return total + measurements.area;
-    }, 0);
+      if (!rooms || !Array.isArray(rooms)) {
+        console.warn('calculateTotalArea: rooms is not an array', rooms);
+        return 0;
+      }
+
+      return rooms.reduce((total, room) => {
+        if (!room || typeof room.width !== 'number' || typeof room.height !== 'number') {
+          console.warn('calculateTotalArea: invalid room data', room);
+          return total;
+        }
+
+        const measurements = calculateAutomaticRoomMeasurements(
+          room,
+          measurementUnit || 'ft'
+        );
+        return total + (measurements?.area || 0);
+      }, 0);
+    } catch (error) {
+      console.error('calculateTotalArea error:', error);
+      return 0;
+    }
   },
 
   calculateElementMeasurements: (elementId: string) => {
     const { rooms, walls, measurementUnit } = get();
-    const {
-      calculateAutomaticRoomMeasurements,
-      calculateWallLength,
-      convertUnit,
-    } = require("../utils/geometry");
 
     // Find the element
     const room = rooms.find((r) => r.id === elementId);
@@ -866,7 +880,6 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
   updateRealTimeMeasurements: (startPoint: any, currentPoint: any) => {
     const { measurementUnit } = get();
-    const { calculateRealTimeDimensions } = require("../utils/geometry");
 
     return calculateRealTimeDimensions(
       startPoint,
@@ -877,7 +890,6 @@ const useFloorPlanStore = create<FloorPlanStore>((set, get) => ({
 
   getAutomaticAnnotations: () => {
     const { rooms, walls, measurementUnit } = get();
-    const { getMeasurementAnnotations } = require("../utils/geometry");
 
     const allElements = [
       ...rooms.map((r) => ({ ...r, type: "room" })),
